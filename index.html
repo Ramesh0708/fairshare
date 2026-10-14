@@ -960,6 +960,37 @@
         </div>
       </div>
 
+      <!-- Expense Type Toggle: Group vs 1-on-1 Direct Friend -->
+      <div style="margin-bottom: 16px;">
+        <label style="font-size:0.8rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-bottom:6px; display:block;">Split Expense With:</label>
+        <div style="display:flex; gap:8px; background:var(--box-bg); padding:4px; border-radius:10px; border:1px solid var(--border);">
+          <button type="button" id="btn-scope-group" class="btn" onclick="setExpenseScope('group')" style="flex:1; padding:8px 12px; font-size:0.85rem; font-weight:600; background:var(--primary); color:white; border:none; border-radius:8px;">
+            👥 Group Expense
+          </button>
+          <button type="button" id="btn-scope-friend" class="btn" onclick="setExpenseScope('friend')" style="flex:1; padding:8px 12px; font-size:0.85rem; font-weight:600; background:transparent; color:var(--text); border:none; border-radius:8px;">
+            👤 1-on-1 with a Friend
+          </button>
+        </div>
+      </div>
+
+      <!-- 1-on-1 Direct Friend Selection Box -->
+      <div id="direct-friend-box" style="display:none; background:var(--box-bg); padding:14px; border-radius:10px; border:2px solid var(--primary); margin-bottom:16px;">
+        <label for="direct-friend-select" style="font-size:0.85rem; font-weight:700; margin-bottom:6px; display:block;">
+          Choose Friend to Split 1-on-1 With:
+        </label>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <select id="direct-friend-select" style="flex:1; font-weight:600; padding:8px;" onchange="handleDirectFriendChange()">
+            <!-- Filled dynamically -->
+          </select>
+          <button type="button" class="btn btn-secondary" onclick="promptQuickFriendForExpense()" style="white-space:nowrap; padding:8px 12px; font-size:0.82rem;">
+            + Type New Name
+          </button>
+        </div>
+        <span style="font-size:0.75rem; color:var(--muted); display:block; margin-top:4px;">
+          Split directly with this person. No group is required.
+        </span>
+      </div>
+
       <form id="expense-form">
         <input type="hidden" id="editing-tx-id" value="">
         <div class="form-row">
@@ -1125,7 +1156,19 @@
         </table>
       </div>
     </div>
-  </section>
+  
+    <!-- Direct 1-on-1 Friend Balances Card -->
+    <div class="card" id="direct-balances-card" style="margin-top: 20px;">
+      <div class="card-header-row">
+        <div>
+          <h2>Direct 1-on-1 Friend Balances</h2>
+          <span style="font-size:0.82rem; color:var(--muted);">Non-group expenses and direct IOUs with individual friends</span>
+        </div>
+        <button type="button" class="btn btn-secondary" onclick="navigateTo('friends')" style="padding:6px 12px; font-size:0.8rem;">Manage Friends →</button>
+      </div>
+      <div id="direct-balances-list" style="margin-top:12px;"></div>
+    </div>
+</section>
 
   <!-- ================= PAGE 4: EXPENSE HISTORY ================= -->
   <section id="page-history" class="app-page">
@@ -1197,12 +1240,30 @@
       <button type="button" id="btn-new-group-modal" class="btn" style="padding:6px 12px; font-size:0.82rem;">+ New Group</button>
     </div>
 
-    <!-- Group Management Card -->
+    <!-- Active User & Google Account Status -->
+    <div class="card" style="padding: 14px 18px; margin-bottom: 16px; background: var(--box-bg);">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div>
+          <span style="font-size:0.75rem; text-transform:uppercase; font-weight:700; color:var(--muted); display:block;">Your Google Account</span>
+          <div style="margin-top:2px;">
+            <strong id="my-display-account" style="font-size:1rem; color:var(--text);">Not signed in</strong>
+          </div>
+        </div>
+        <button type="button" id="btn-copy-my-email" class="btn btn-secondary" onclick="copyMyEmail()" style="padding:6px 12px; font-size:0.82rem;">
+          📋 Copy My Email
+        </button>
+      </div>
+      <div style="margin-top:6px; font-size:0.78rem; color:var(--muted);">
+        💡 Signing in is optional. Sign in to connect seamlessly with friends via email and sync live across devices.
+      </div>
+    </div>
+
+    <!-- 1. GROUP MANAGEMENT CARD -->
     <div class="card">
       <div class="card-header-row">
         <div>
           <h2>Group Management</h2>
-          <span style="font-size:0.82rem; color:var(--muted);">Add people, customize currencies, and manage group settings</span>
+          <span style="font-size:0.82rem; color:var(--muted);">Manage members, active group settings, and currency</span>
         </div>
       </div>
       
@@ -1214,7 +1275,7 @@
         <div style="display: flex; gap: 6px;">
           <button type="button" id="btn-share-group-invite" class="btn btn-secondary" onclick="shareGroupInvite()" style="padding: 6px 10px; font-size: 0.82rem;" title="Share group invite link">🔗 Invite Link</button>
           <button type="button" id="btn-rename-group" class="btn btn-secondary" style="padding: 6px 10px; font-size: 0.82rem;" title="Rename active group">✏️ Rename</button>
-          <button type="button" id="btn-delete-group" class="btn btn-secondary" style="padding: 6px 10px; font-size: 0.82rem; color: var(--danger);" title="Delete active group">🗑️</button>
+          <button type="button" id="btn-delete-group" class="btn btn-secondary" style="padding: 6px 10px; font-size: 0.82rem;" title="Delete active group">🗑️</button>
         </div>
       </div>
 
@@ -1232,75 +1293,102 @@
         </div>
 
         <div class="form-group">
-          <label for="friend-picker-select">Add from Saved Friends</label>
+          <label for="friend-picker-select">Add from Connected / Saved Friends</label>
           <div style="display: flex; gap: 8px;">
             <select id="friend-picker-select">
-              <option value="">-- Choose a Saved Friend --</option>
+              <option value="">-- Choose a Connected Friend --</option>
             </select>
             <button type="button" id="btn-add-friend-to-group" class="btn btn-secondary" style="white-space:nowrap;">Add to Group</button>
           </div>
         </div>
       </div>
 
-      <!-- Add Any Name Directly Form (No Login Required) -->
+      <!-- Option 1: Direct Name Addition (No login needed) -->
       <div style="background: var(--box-bg); padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 14px;">
         <label for="input-new-member-name" style="font-size:0.85rem; font-weight:600; margin-bottom:6px; display:block;">
-          ➕ Add Any Name to Group Directly (No login needed):
+          ➕ Add Any Name Directly to Group (No login needed):
         </label>
         <div style="display:flex; gap:8px;">
           <input type="text" id="input-new-member-name" placeholder="Type any name (e.g. Aryan, Rahul, Priya, Roommate)" style="flex:1;">
           <button type="button" id="btn-add-custom-member" class="btn btn-primary" onclick="addMemberToActiveGroup()" style="white-space:nowrap;">+ Add Member</button>
         </div>
         <span style="font-size:0.75rem; color:var(--muted); display:block; margin-top:4px;">
-          Anyone you add here immediately appears in expense splits and debt calculations.
+          Directly adds anyone to this group's expense calculations without requiring them to log in.
         </span>
       </div>
 
       <div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
           <label style="margin-bottom: 0;">Group Members (<span id="member-count">0</span>):</label>
-          <span style="font-size:0.75rem; color:var(--muted);">Click × to remove a member</span>
+          <span style="font-size:0.75rem; color:var(--muted);">Click × on a chip to remove</span>
         </div>
         <div id="members-container" class="chip-container"></div>
       </div>
     </div>
 
-    <!-- Friends Roster Card -->
+    <!-- 2. INCOMING FRIEND REQUESTS CARD (REQUIRES APPROVAL) -->
+    <div class="card" id="incoming-requests-card" style="border: 2px solid var(--primary);">
+      <div class="card-header-row">
+        <div>
+          <h2>Incoming Friend Requests <span id="incoming-badge-count" class="badge-count" style="display:none;">0</span></h2>
+          <span style="font-size:0.8rem; color:var(--muted);">Approve or decline connection requests sent to your Google email</span>
+        </div>
+      </div>
+      <div id="incoming-requests-container" style="margin-top: 10px;">
+        <div style="text-align:center; color:var(--muted); padding:16px; background:var(--box-bg); border-radius:8px; font-size:0.85rem;">
+          No pending incoming requests. When a friend enters your Google email, their request will appear here for your approval.
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. SEND FRIEND REQUEST BY GOOGLE EMAIL CARD -->
     <div class="card">
       <div class="card-header-row">
         <div>
-          <h2>Friends Roster (<span id="global-friends-count">0</span>)</h2>
-          <span style="font-size:0.8rem; color:var(--muted);">Save your friends once to quickly pick them across any group in 1 click</span>
+          <h2>Connect with Friends by Google Email</h2>
+          <span style="font-size:0.8rem; color:var(--muted);">Send an invitation. Once approved by your friend, you become mutual connected friends.</span>
         </div>
       </div>
 
       <div style="background: var(--box-bg); padding: 14px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 14px;">
-        <label for="new-friend-name">Save a Friend Name</label>
+        <label for="input-friend-email">Friend's Google Email Address</label>
         <div style="display:flex; gap:8px;">
-          <input type="text" id="new-friend-name" placeholder="Enter friend name (e.g. Aryan Ahir, Pooja, Liam)" style="flex:1;">
-          <button type="button" id="btn-save-friend" class="btn btn-friends" onclick="addNewFriendToRoster()" style="white-space:nowrap;">+ Add to Friends</button>
+          <input type="email" id="input-friend-email" placeholder="e.g. aryanahir315@gmail.com" style="flex:1;">
+          <button type="button" id="btn-send-friend-request" class="btn btn-friends" onclick="sendFriendRequest()" style="white-space:nowrap;">📨 Send Request</button>
         </div>
+        <span style="font-size:0.75rem; color:var(--muted); display:block; margin-top:6px;">
+          Your friend will receive a real-time notification to approve or decline on their device.
+        </span>
       </div>
 
-      <label style="font-size:0.82rem; font-weight:600; color:var(--muted);">Saved Friends List:</label>
-      <div id="friends-list-container" class="friends-list-container"></div>
+      <!-- Outgoing Pending Requests -->
+      <div>
+        <label style="font-size:0.82rem; font-weight:600; color:var(--muted);">Sent Requests (Awaiting Friend's Approval):</label>
+        <div id="outgoing-requests-container" style="margin-top:6px;">
+          <div style="font-size:0.8rem; color:var(--muted); padding:6px 0;">No pending sent requests.</div>
+        </div>
+      </div>
     </div>
 
-    <!-- Optional Cloud Sync & Google Account Status Card -->
-    <div class="card" style="border: 1px dashed var(--border); background: var(--box-bg);">
+    <!-- 4. CONNECTED & SAVED FRIENDS ROSTER CARD -->
+    <div class="card">
       <div class="card-header-row">
         <div>
-          <h3 style="font-size:0.95rem; margin-bottom:4px;">☁️ Real-time Cloud Sync (Optional)</h3>
-          <span style="font-size:0.78rem; color:var(--muted);">Sign in with Google if you want live sync across phones/laptops with friends</span>
+          <h2>Connected Friends Roster (<span id="global-friends-count">0</span>)</h2>
+          <span style="font-size:0.8rem; color:var(--muted);">Approved Google connections & saved friends available across your groups</span>
         </div>
       </div>
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-top:8px;">
-        <div>
-          <span style="font-size:0.72rem; text-transform:uppercase; font-weight:700; color:var(--muted);">Status:</span>
-          <div id="my-display-account" style="font-size:0.88rem; font-weight:600;">Not signed in (Operating 100% offline & local)</div>
+
+      <div style="background: var(--box-bg); padding: 14px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 14px;">
+        <label for="new-friend-name">Quick Add Friend by Name (Local):</label>
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="new-friend-name" placeholder="Type friend's name (e.g. Aryan, Pooja, Vikram)" style="flex:1;">
+          <button type="button" id="btn-save-friend" class="btn btn-secondary" onclick="addNewFriendToRoster()" style="white-space:nowrap;">+ Add to Roster</button>
         </div>
-        <button type="button" class="btn btn-secondary" onclick="shareGroupInvite()" style="padding:6px 12px; font-size:0.82rem;">🔗 Copy Group Invite Link</button>
       </div>
+
+      <label style="font-size:0.82rem; font-weight:600; color:var(--muted);">Friends List:</label>
+      <div id="friends-list-container" class="friends-list-container"></div>
     </div>
   </section>
 
@@ -1394,6 +1482,7 @@
         { id: "f1", name: "Aryan" },
         { id: "f2", name: "Rahul" }
       ],
+      directTransactions: [],
       groups: {
         "group_default": {
           id: "group_default",
@@ -1506,6 +1595,7 @@
           const parsed = JSON.parse(saved);
           if (parsed.theme) appState.theme = parsed.theme;
           if (parsed.friends && Array.isArray(parsed.friends)) appState.friends = parsed.friends;
+          if (parsed.directTransactions && Array.isArray(parsed.directTransactions)) appState.directTransactions = parsed.directTransactions;
           if (parsed.groups && Object.keys(parsed.groups).length > 0) appState.groups = parsed.groups;
           if (parsed.activeGroupId && appState.groups[parsed.activeGroupId]) appState.activeGroupId = parsed.activeGroupId;
         } catch (e) {
@@ -1676,7 +1766,13 @@
       });
     }
 
-    // --- Member & Friend Management (Zero Compulsion to Log In) ---
+    // --- Member & Friend Management (Both Direct Names & Email Request/Approval) ---
+    let localIncomingRequests = [];
+    let localOutgoingRequests = [];
+    let unsubIncomingRequests = null;
+    let unsubOutgoingRequests = null;
+
+    // 1. Direct Name Addition (No login needed)
     window.addMemberToActiveGroup = function(customName) {
       const g = getGroup();
       const inputEl = document.getElementById("input-new-member-name");
@@ -1693,7 +1789,7 @@
 
       // Save to friends roster if not already there
       if (!appState.friends.some(f => f.name.toLowerCase() === name.toLowerCase())) {
-        appState.friends.push({ id: "f_" + Date.now(), name: name });
+        appState.friends.push({ id: "f_" + Date.now(), name: name, type: "custom" });
       }
 
       saveState();
@@ -1729,6 +1825,7 @@
       renderAll();
     };
 
+    // 2. Local Friend Roster Quick Add
     window.addNewFriendToRoster = function() {
       const inputEl = document.getElementById("new-friend-name");
       const name = (inputEl ? inputEl.value : "").trim();
@@ -1740,7 +1837,7 @@
         alert(`"${name}" is already in your friends roster!`);
         return;
       }
-      appState.friends.push({ id: "f_" + Date.now(), name: name });
+      appState.friends.push({ id: "f_" + Date.now(), name: name, type: "custom" });
       saveState();
       renderFriendsRoster();
       renderFriendPickerDropdown();
@@ -1758,24 +1855,298 @@
       }
     };
 
+    // 3. Google Email Friend Request & Approval Workflow
+    window.copyMyEmail = function() {
+      if (!currentUser || !currentUser.email) {
+        alert("Please sign in with Google (top right) first to copy your verified account email.");
+        return;
+      }
+      navigator.clipboard.writeText(currentUser.email).then(() => {
+        alert(`Copied! Share your email (${currentUser.email}) with friends so they can send you a request.`);
+      }).catch(() => {
+        prompt("Copy your email:", currentUser.email);
+      });
+    };
+
+    window.sendFriendRequest = async function() {
+      const inputEl = document.getElementById("input-friend-email");
+      const rawInput = (inputEl ? inputEl.value : "").trim();
+      if (!rawInput) {
+        alert("Please enter your friend's Google email address.");
+        return;
+      }
+
+      const targetEmail = rawInput.toLowerCase();
+      if (!targetEmail.includes("@") || !targetEmail.includes(".")) {
+        alert(`"${rawInput}" is not a valid email address.\n\nPlease enter your friend's exact Google email (e.g. aryanahir315@gmail.com).`);
+        return;
+      }
+
+      if (!currentUser || !currentUser.email) {
+        alert("Please click G Sign In (top right) first so your friend can receive and approve your request.");
+        return;
+      }
+
+      const myEmail = currentUser.email.toLowerCase().trim();
+      const myName = currentUser.displayName || myEmail.split("@")[0];
+
+      if (targetEmail === myEmail) {
+        alert("You cannot send a friend request to your own email address.");
+        return;
+      }
+
+      // Check if already an approved connected friend
+      if (appState.friends.some(f => f.email && f.email.toLowerCase() === targetEmail)) {
+        alert(`${targetEmail} is already in your Connected Friends list!`);
+        return;
+      }
+
+      // Check for mutual incoming request -> auto-approve immediately!
+      const existingIncoming = localIncomingRequests.find(r => r.fromEmail.toLowerCase() === targetEmail);
+      if (existingIncoming) {
+        await approveFriendRequest(existingIncoming.id, targetEmail, existingIncoming.fromName);
+        if (inputEl) inputEl.value = "";
+        alert(`🎉 Mutual connection! Both you and ${targetEmail} requested each other. You are now connected friends!`);
+        return;
+      }
+
+      const reqId = `req_${myEmail}_to_${targetEmail}`.replace(/[^a-zA-Z0-9_]/g, "_");
+      const reqData = {
+        id: reqId,
+        fromEmail: myEmail,
+        fromName: myName,
+        toEmail: targetEmail,
+        status: "pending",
+        createdAt: Date.now()
+      };
+
+      if (!localOutgoingRequests.some(r => r.id === reqId)) {
+        localOutgoingRequests.push(reqData);
+        renderFriendRequestsUI();
+      }
+
+      if (db) {
+        try {
+          await db.collection("friend_requests").doc(reqId).set(reqData);
+          if (inputEl) inputEl.value = "";
+          alert(`📨 Friend request sent to ${targetEmail}!\n\nWhen your friend signs into FairShare with ${targetEmail}, they will see this request and can click Approve.`);
+        } catch (err) {
+          console.error("Error sending friend request:", err);
+          alert("Could not send request: " + err.message);
+        }
+      } else {
+        alert("Offline mode: Firebase connection required to send cloud friend requests.");
+      }
+    };
+
+    window.approveFriendRequest = async function(reqId, requesterEmail, requesterName) {
+      if (!currentUser || !currentUser.email) return;
+      const myEmail = currentUser.email.toLowerCase().trim();
+      const myName = currentUser.displayName || myEmail.split("@")[0];
+      const reqEmail = requesterEmail.toLowerCase().trim();
+      const reqName = requesterName || reqEmail.split("@")[0];
+
+      // Optimistic local update
+      localIncomingRequests = localIncomingRequests.filter(r => r.id !== reqId && r.fromEmail.toLowerCase() !== reqEmail);
+      addApprovedFriend(reqEmail, reqName);
+      renderFriendRequestsUI();
+
+      if (db) {
+        try {
+          await db.collection("friend_requests").doc(reqId).update({
+            status: "accepted",
+            acceptedByEmail: myEmail,
+            acceptedByName: myName,
+            acceptedAt: Date.now()
+          });
+        } catch (err) {
+          console.error("Error updating approval in Firestore:", err);
+        }
+      }
+
+      alert(`✅ Approved! ${reqName} (${reqEmail}) is now in your Connected Friends list.`);
+    };
+
+    window.declineFriendRequest = async function(reqId) {
+      if (!confirm("Decline this friend request?")) return;
+      localIncomingRequests = localIncomingRequests.filter(r => r.id !== reqId);
+      renderFriendRequestsUI();
+
+      if (db) {
+        try {
+          await db.collection("friend_requests").doc(reqId).update({
+            status: "declined",
+            declinedAt: Date.now()
+          });
+        } catch (err) {
+          console.error("Error declining request:", err);
+        }
+      }
+    };
+
+    window.cancelOutgoingRequest = async function(reqId) {
+      if (!confirm("Cancel this outgoing friend request?")) return;
+      localOutgoingRequests = localOutgoingRequests.filter(r => r.id !== reqId);
+      renderFriendRequestsUI();
+
+      if (db) {
+        try {
+          await db.collection("friend_requests").doc(reqId).delete();
+        } catch (err) {
+          console.error("Error canceling request:", err);
+        }
+      }
+    };
+
+    function addApprovedFriend(email, name) {
+      const em = email.toLowerCase().trim();
+      const nm = name || em.split("@")[0];
+      if (!appState.friends.some(f => f.email && f.email.toLowerCase() === em)) {
+        appState.friends.push({
+          id: "f_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
+          name: nm,
+          email: em,
+          approved: true,
+          type: "google"
+        });
+        saveState();
+        renderFriendsRoster();
+        renderFriendPickerDropdown();
+      }
+    }
+
+    function renderFriendRequestsUI() {
+      const incoming = localIncomingRequests.filter(r => r.status === "pending");
+      const outgoing = localOutgoingRequests.filter(r => r.status === "pending");
+      const count = incoming.length;
+
+      const incomingBadgeCount = document.getElementById("incoming-badge-count");
+      const desktopRequestsBadge = document.getElementById("desktop-requests-badge");
+      const mobileRequestsBadge = document.getElementById("mobile-requests-badge");
+      const incomingRequestsContainer = document.getElementById("incoming-requests-container");
+      const outgoingRequestsContainer = document.getElementById("outgoing-requests-container");
+
+      if (incomingBadgeCount) {
+        incomingBadgeCount.textContent = count;
+        incomingBadgeCount.style.display = count > 0 ? "inline-block" : "none";
+      }
+      if (desktopRequestsBadge) {
+        desktopRequestsBadge.textContent = count;
+        desktopRequestsBadge.style.display = count > 0 ? "inline-block" : "none";
+      }
+      if (mobileRequestsBadge) {
+        mobileRequestsBadge.textContent = count;
+        mobileRequestsBadge.style.display = count > 0 ? "inline-block" : "none";
+      }
+
+      if (incomingRequestsContainer) {
+        if (!currentUser) {
+          incomingRequestsContainer.innerHTML = `
+            <div style="text-align:center; color:var(--muted); padding:16px; background:var(--box-bg); border-radius:8px; font-size:0.85rem;">
+              👉 Sign in with Google (top right) to view and approve incoming requests sent to your email.
+            </div>`;
+        } else if (count === 0) {
+          incomingRequestsContainer.innerHTML = `
+            <div style="text-align:center; color:var(--muted); padding:16px; background:var(--box-bg); border-radius:8px; font-size:0.85rem;">
+              No pending incoming requests. When a friend sends a request to <strong>${currentUser.email}</strong>, it will appear here for your approval.
+            </div>`;
+        } else {
+          incomingRequestsContainer.innerHTML = "";
+          incoming.forEach(req => {
+            const div = document.createElement("div");
+            div.className = "incoming-request-card";
+            div.innerHTML = `
+              <div class="request-info">
+                <div class="request-avatar">👤</div>
+                <div>
+                  <strong style="font-size:0.95rem;">${req.fromName}</strong>
+                  <div style="font-size:0.8rem; color:var(--muted);">${req.fromEmail}</div>
+                  <span class="request-pending-pill">⏳ Wants to connect with you</span>
+                </div>
+              </div>
+              <div class="request-actions">
+                <button type="button" class="btn btn-approve" onclick="approveFriendRequest('${req.id}', '${req.fromEmail}', '${req.fromName}')">✓ Approve</button>
+                <button type="button" class="btn btn-decline" onclick="declineFriendRequest('${req.id}')">✕ Decline</button>
+              </div>
+            `;
+            incomingRequestsContainer.appendChild(div);
+          });
+        }
+      }
+
+      if (outgoingRequestsContainer) {
+        if (outgoing.length === 0) {
+          outgoingRequestsContainer.innerHTML = `<div style="font-size:0.8rem; color:var(--muted); padding:6px 0;">No pending sent requests.</div>`;
+        } else {
+          outgoingRequestsContainer.innerHTML = "";
+          outgoing.forEach(req => {
+            const div = document.createElement("div");
+            div.className = "outgoing-request-row";
+            div.innerHTML = `
+              <div>
+                <span style="font-size:0.85rem; font-weight:600;">Request to: ${req.toEmail}</span>
+                <span class="request-pending-pill" style="margin-left:8px;">⏳ Pending Approval</span>
+              </div>
+              <button type="button" class="btn btn-secondary" onclick="cancelOutgoingRequest('${req.id}')" style="padding:4px 8px; font-size:0.75rem;">Cancel</button>
+            `;
+            outgoingRequestsContainer.appendChild(div);
+          });
+        }
+      }
+    }
+
     function renderFriendsRoster() {
       if (globalFriendsCount) globalFriendsCount.textContent = appState.friends.length;
-      if (dashFriendsDesc) dashFriendsDesc.textContent = `${appState.friends.length} saved friends`;
+      if (dashFriendsDesc) dashFriendsDesc.textContent = `${appState.friends.length} connected friends`;
       if (!friendsListContainer) return;
 
       friendsListContainer.innerHTML = "";
       if (appState.friends.length === 0) {
-        friendsListContainer.innerHTML = `<div style="text-align:center; color:var(--muted); padding:16px;">No saved friends yet. Type a name above to add!</div>`;
+        friendsListContainer.innerHTML = `<div style="text-align:center; color:var(--muted); padding:16px;">No saved or connected friends yet. Add a name or send an email request above!</div>`;
         return;
       }
       appState.friends.forEach(f => {
         const div = document.createElement("div");
         div.className = "friend-row";
+        const isApproved = f.approved || f.email;
+        const cur = getGroup().currency;
+        // Compute 1-on-1 balance with this friend
+        let friendBal = 0;
+        (appState.directTransactions || []).forEach(t => {
+          if (t.type === "expense" && t.friend === f.name) {
+            const myShare = (t.shares && t.shares["You"]) || 0;
+            const theirShare = (t.shares && t.shares[f.name]) || 0;
+            if (t.payer === "You") friendBal += theirShare;
+            else if (t.payer === f.name) friendBal -= myShare;
+          } else if (t.type === "settlement" && t.friend === f.name) {
+            if (t.payer === f.name && t.receiver === "You") friendBal -= t.amount;
+            else if (t.payer === "You" && t.receiver === f.name) friendBal += t.amount;
+          }
+        });
+
+        let balBadge = "";
+        if (Math.abs(friendBal) > 0.01) {
+          if (friendBal > 0) {
+            balBadge = `<span style="font-size:0.75rem; font-weight:700; color:#16a34a; background:#dcfce7; padding:2px 6px; border-radius:4px; margin-left:6px;">Owes you ${cur}${friendBal.toFixed(2)}</span>`;
+          } else {
+            balBadge = `<span style="font-size:0.75rem; font-weight:700; color:#dc2626; background:#fee2e2; padding:2px 6px; border-radius:4px; margin-left:6px;">You owe ${cur}${Math.abs(friendBal).toFixed(2)}</span>`;
+          }
+        }
+
         div.innerHTML = `
           <div>
             <strong>${f.name}</strong>
+            ${isApproved ? '<span class="approved-pill">✓ Approved</span>' : '<span style="font-size:0.7rem; background:var(--border); padding:2px 6px; border-radius:4px; margin-left:6px; color:var(--muted);">Local</span>'}
+            ${balBadge}
+            <span style="font-size:0.75rem; color:var(--muted); display:block; margin-top:2px;">
+              ${f.email ? f.email : 'Saved name'}
+            </span>
           </div>
-          <button type="button" class="btn-delete" onclick="deleteFriendFromRoster('${f.id}')" title="Remove from roster">&times;</button>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <button type="button" class="btn btn-secondary" onclick="quickStartDirectExpense('${f.name}')" style="padding:4px 8px; font-size:0.75rem;">➕ Split</button>
+            ${Math.abs(friendBal) > 0.01 ? `<button type="button" class="btn btn-settle" onclick="quickStartDirectSettle('${f.name}', ${friendBal})" style="padding:4px 8px; font-size:0.75rem;">🤝 Settle</button>` : ''}
+            <button type="button" class="btn-delete" onclick="deleteFriendFromRoster('${f.id}')" title="Remove friend">&times;</button>
+          </div>
         `;
         friendsListContainer.appendChild(div);
       });
@@ -1784,19 +2155,19 @@
     function renderFriendPickerDropdown() {
       const g = getGroup();
       if (!friendPickerSelect) return;
-      friendPickerSelect.innerHTML = `<option value="">-- Choose a Saved Friend --</option>`;
+      friendPickerSelect.innerHTML = `<option value="">-- Choose a Connected Friend --</option>`;
       const availableFriends = appState.friends.filter(f => !g.members.includes(f.name));
       availableFriends.forEach(f => {
         const opt = document.createElement("option");
         opt.value = f.name;
-        opt.textContent = `${f.name}`;
+        opt.textContent = `${f.name}${f.email ? ' (' + f.email + ')' : ''}`;
         friendPickerSelect.appendChild(opt);
       });
       if (availableFriends.length === 0) {
         const opt = document.createElement("option");
         opt.value = "";
         opt.disabled = true;
-        opt.textContent = "(All friends already in this group)";
+        opt.textContent = appState.friends.length === 0 ? "(No friends in roster yet — add above)" : "(All friends already in this group)";
         friendPickerSelect.appendChild(opt);
       }
     }
@@ -1810,56 +2181,6 @@
         }
         addMemberToActiveGroup(selectedName);
       });
-    }
-
-    function renderMembers() {
-      const g = getGroup();
-      if (memberCountSpan) memberCountSpan.textContent = g.members.length;
-      if (membersContainer) membersContainer.innerHTML = "";
-      if (payerSelect) payerSelect.innerHTML = "";
-      if (settlePayer) settlePayer.innerHTML = "";
-      if (settleReceiver) settleReceiver.innerHTML = "";
-      if (filterMemberSelect) filterMemberSelect.innerHTML = `<option value="all">All Members</option>`;
-
-      g.members.forEach((member) => {
-        if (membersContainer) {
-          const chip = document.createElement("div");
-          chip.className = "chip";
-          chip.innerHTML = `
-            <span>${member}</span>
-            <button type="button" class="chip-remove" onclick="removeMember('${member}')" title="Remove member">&times;</button>
-          `;
-          membersContainer.appendChild(chip);
-        }
-
-        if (payerSelect) {
-          const opt1 = document.createElement("option"); opt1.value = member; opt1.textContent = member; payerSelect.appendChild(opt1);
-        }
-        if (settlePayer) {
-          const opt2 = document.createElement("option"); opt2.value = member; opt2.textContent = member; settlePayer.appendChild(opt2);
-        }
-        if (settleReceiver) {
-          const opt3 = document.createElement("option"); opt3.value = member; opt3.textContent = member; settleReceiver.appendChild(opt3);
-        }
-        if (filterMemberSelect) {
-          const opt4 = document.createElement("option"); opt4.value = member; opt4.textContent = member; filterMemberSelect.appendChild(opt4);
-        }
-      });
-
-      if (homeMembersChips) {
-        homeMembersChips.innerHTML = "";
-        g.members.forEach(m => {
-          const sp = document.createElement("span");
-          sp.className = "chip";
-          sp.style.padding = "4px 10px";
-          sp.style.fontSize = "0.8rem";
-          sp.textContent = m;
-          homeMembersChips.appendChild(sp);
-        });
-      }
-
-      renderSplitBreakdown();
-      renderFriendPickerDropdown();
     }
 
     // --- Group Selectors & Modal ---
@@ -1992,6 +2313,138 @@
       });
     }
 
+        // --- 1-on-1 Direct Splitting with Friends ---
+    let currentExpenseScope = "group"; // "group" or "friend"
+    let selectedDirectFriend = "";
+    let historyFilterType = "all";
+
+    window.setExpenseScope = function(scope) {
+      currentExpenseScope = scope;
+      const btnGroup = document.getElementById("btn-scope-group");
+      const btnFriend = document.getElementById("btn-scope-friend");
+      const friendBox = document.getElementById("direct-friend-box");
+
+      if (scope === "group") {
+        if (btnGroup) { btnGroup.style.background = "var(--primary)"; btnGroup.style.color = "white"; }
+        if (btnFriend) { btnFriend.style.background = "transparent"; btnFriend.style.color = "var(--text)"; }
+        if (friendBox) friendBox.style.display = "none";
+        if (formHeading) formHeading.textContent = "Add a Group Expense";
+        renderMembers();
+      } else {
+        if (btnFriend) { btnFriend.style.background = "var(--primary)"; btnFriend.style.color = "white"; }
+        if (btnGroup) { btnGroup.style.background = "transparent"; btnGroup.style.color = "var(--text)"; }
+        if (friendBox) friendBox.style.display = "block";
+        if (formHeading) formHeading.textContent = "Add a 1-on-1 Expense";
+        renderDirectFriendDropdown();
+        handleDirectFriendChange();
+      }
+    };
+
+    function renderDirectFriendDropdown() {
+      const selectEl = document.getElementById("direct-friend-select");
+      if (!selectEl) return;
+      selectEl.innerHTML = "";
+
+      if (appState.friends.length === 0) {
+        selectEl.innerHTML = `<option value="">(No friends added yet — click + Type New Name)</option>`;
+        selectedDirectFriend = "";
+        return;
+      }
+
+      appState.friends.forEach((f, idx) => {
+        const opt = document.createElement("option");
+        opt.value = f.name;
+        opt.textContent = `${f.name}${f.email ? ' (' + f.email + ')' : ''}`;
+        if (selectedDirectFriend ? f.name === selectedDirectFriend : idx === 0) {
+          opt.selected = true;
+          selectedDirectFriend = f.name;
+        }
+        selectEl.appendChild(opt);
+      });
+    }
+
+    window.handleDirectFriendChange = function() {
+      const selectEl = document.getElementById("direct-friend-select");
+      if (selectEl && selectEl.value) {
+        selectedDirectFriend = selectEl.value;
+      } else if (appState.friends.length > 0) {
+        selectedDirectFriend = appState.friends[0].name;
+      } else {
+        selectedDirectFriend = "";
+      }
+
+      // Update Payer dropdown for 1-on-1
+      if (payerSelect) {
+        payerSelect.innerHTML = "";
+        const optYou = document.createElement("option"); optYou.value = "You"; optYou.textContent = "You"; payerSelect.appendChild(optYou);
+        if (selectedDirectFriend) {
+          const optFriend = document.createElement("option"); optFriend.value = selectedDirectFriend; optFriend.textContent = selectedDirectFriend; payerSelect.appendChild(optFriend);
+        }
+      }
+
+      renderSplitBreakdown();
+    };
+
+    window.promptQuickFriendForExpense = function() {
+      const name = prompt("Enter friend's name to split with:");
+      if (!name || !name.trim()) return;
+      const cleanName = name.trim();
+      if (!appState.friends.some(f => f.name.toLowerCase() === cleanName.toLowerCase())) {
+        appState.friends.push({ id: "f_" + Date.now(), name: cleanName, type: "custom" });
+        saveState();
+        renderFriendsRoster();
+        renderFriendPickerDropdown();
+      }
+      selectedDirectFriend = cleanName;
+      renderDirectFriendDropdown();
+      handleDirectFriendChange();
+    };
+
+    window.quickStartDirectExpense = function(friendName) {
+      navigateTo("add-expense");
+      selectedDirectFriend = friendName;
+      setExpenseScope("friend");
+      const selectEl = document.getElementById("direct-friend-select");
+      if (selectEl) selectEl.value = friendName;
+      handleDirectFriendChange();
+    };
+
+    window.quickStartDirectSettle = function(friendName, currentBal) {
+      const cur = getGroup().currency;
+      const absBal = Math.abs(currentBal);
+      const isOwedToMe = currentBal > 0;
+      
+      const payer = isOwedToMe ? friendName : "You";
+      const receiver = isOwedToMe ? "You" : friendName;
+
+      const confirmMsg = isOwedToMe 
+        ? `Record settlement: ${friendName} paid you ${cur}${absBal.toFixed(2)}?`
+        : `Record settlement: You paid ${friendName} ${cur}${absBal.toFixed(2)}?`;
+
+      if (confirm(confirmMsg)) {
+        if (!appState.directTransactions) appState.directTransactions = [];
+        const newTx = {
+          id: Date.now(),
+          type: "settlement",
+          scope: "direct",
+          friend: friendName,
+          desc: `${payer} paid ${receiver} (1-on-1 Settlement)`,
+          payer: payer,
+          receiver: receiver,
+          amount: absBal,
+          category: "Settlement",
+          date: new Date().toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" }),
+          timestamp: Date.now()
+        };
+        appState.directTransactions.unshift(newTx);
+        saveState();
+        triggerConfetti();
+        renderAll();
+        navigateTo("balances");
+      }
+    };
+
+    
     // --- Expense Splits & Forms ---
     tabBtns.forEach(btn => {
       btn.addEventListener("click", () => {
@@ -2010,9 +2463,13 @@
       const cur = g.currency;
       let html = "";
 
+      const participants = currentExpenseScope === "group" 
+        ? g.members 
+        : (selectedDirectFriend ? ["You", selectedDirectFriend] : ["You"]);
+
       if (currentSplitMode === "equal") {
-        html += `<div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 8px;">Select members participating in this expense:</div>`;
-        g.members.forEach(m => {
+        html += `<div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 8px;">Select who shares this bill (${currentExpenseScope === "friend" ? "1-on-1 split" : "Group split"}):</div>`;
+        participants.forEach(m => {
           html += `
             <div class="split-row">
               <label><input type="checkbox" class="split-equal-check" value="${m}" checked onchange="updateEqualPreview()"> ${m}</label>
@@ -2021,8 +2478,8 @@
           `;
         });
       } else if (currentSplitMode === "exact") {
-        html += `<div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 8px;">Specify exact amount each member pays:</div>`;
-        g.members.forEach(m => {
+        html += `<div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 8px;">Specify exact amount each person owes:</div>`;
+        participants.forEach(m => {
           html += `
             <div class="split-row">
               <label>${m}</label>
@@ -2035,8 +2492,8 @@
         });
         html += `<div id="exact-diff-msg" style="font-size:0.8rem; margin-top:6px; font-weight:600;"></div>`;
       } else if (currentSplitMode === "percent") {
-        html += `<div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 8px;">Specify percentage split (must sum to 100%):</div>`;
-        g.members.forEach(m => {
+        html += `<div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 8px;">Specify percentage split (must total 100%):</div>`;
+        participants.forEach(m => {
           html += `
             <div class="split-row">
               <label>${m}</label>
@@ -2049,8 +2506,8 @@
         });
         html += `<div id="percent-diff-msg" style="font-size:0.8rem; margin-top:6px; font-weight:600;"></div>`;
       } else if (currentSplitMode === "ratio") {
-        html += `<div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 8px;">Specify weight shares (e.g., 2 shares for couples):</div>`;
-        g.members.forEach(m => {
+        html += `<div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 8px;">Specify weight shares (e.g., 1 share each):</div>`;
+        participants.forEach(m => {
           html += `
             <div class="split-row">
               <label>${m}</label>
@@ -2120,7 +2577,10 @@
     function computeSplitShares(total) {
       const g = getGroup();
       const shares = {};
-      g.members.forEach(m => shares[m] = 0);
+      const participants = currentExpenseScope === "group" 
+        ? g.members 
+        : (selectedDirectFriend ? ["You", selectedDirectFriend] : ["You"]);
+      participants.forEach(m => shares[m] = 0);
 
       if (currentSplitMode === "equal") {
         const checked = Array.from(document.querySelectorAll(".split-equal-check:checked")).map(cb => cb.value);
@@ -2248,6 +2708,53 @@
         }
 
         const editId = editingTxId.value ? parseInt(editingTxId.value) : null;
+
+        if (editId) {
+          // Find in group or direct transactions
+          let tx = g.transactions.find(t => t.id === editId);
+          if (!tx && appState.directTransactions) {
+            tx = appState.directTransactions.find(t => t.id === editId);
+          }
+          if (tx) {
+            tx.desc = desc;
+            tx.amount = amount;
+            tx.payer = payer;
+            tx.category = category;
+            tx.shares = shares;
+            tx.splitMode = currentSplitMode;
+            if (activeReceiptBase64) tx.receipt = activeReceiptBase64;
+          }
+          cancelEditMode();
+        } else {
+          const newTx = {
+            id: Date.now(),
+            type: "expense",
+            scope: currentExpenseScope,
+            friend: currentExpenseScope === "friend" ? selectedDirectFriend : null,
+            desc: desc,
+            amount: amount,
+            payer: payer,
+            category: category,
+            shares: shares,
+            splitMode: currentSplitMode,
+            date: new Date().toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" }),
+            timestamp: Date.now(),
+            receipt: activeReceiptBase64
+          };
+
+          if (currentExpenseScope === "friend") {
+            if (!appState.directTransactions) appState.directTransactions = [];
+            appState.directTransactions.unshift(newTx);
+          } else {
+            g.transactions.unshift(newTx);
+          }
+
+          descInput.value = "";
+          amountInput.value = "";
+          categoryManuallyOverridden = false;
+          updateCatBadge(null);
+          if (btnClearReceipt) btnClearReceipt.click();
+        }
 
         if (editId) {
           const tx = g.transactions.find(t => t.id === editId);
@@ -2656,7 +3163,16 @@
       if (!transactionListEl) return;
       transactionListEl.innerHTML = "";
 
-      let filtered = g.transactions.slice();
+      let allTx = [
+        ...g.transactions.map(t => ({ ...t, sourceGroup: g.name })),
+        ...(appState.directTransactions || []).map(t => ({ ...t, sourceGroup: `1-on-1: ${t.friend}` }))
+      ];
+      allTx.sort((a, b) => (b.timestamp || b.id) - (a.timestamp || a.id));
+
+      let filtered = allTx;
+      if (historyFilterType === "direct") {
+        filtered = filtered.filter(t => t.scope === "direct");
+      }
 
       if (historyFilter === "expenses") filtered = filtered.filter(t => t.type === "expense");
       else if (historyFilter === "settlements") filtered = filtered.filter(t => t.type === "settlement");
@@ -2927,7 +3443,91 @@
     }
 
     // --- Master Render ---
+        // --- 1-on-1 Direct Friend Balances Calculator ---
+    function renderDirectBalances() {
+      const container = document.getElementById("direct-balances-list");
+      if (!container) return;
+      container.innerHTML = "";
+
+      const cur = getGroup().currency;
+      const directBalances = {};
+      appState.friends.forEach(f => directBalances[f.name] = 0);
+
+      (appState.directTransactions || []).forEach(t => {
+        if (t.type === "expense" && t.friend) {
+          if (directBalances[t.friend] === undefined) directBalances[t.friend] = 0;
+          const myShare = (t.shares && t.shares["You"]) || 0;
+          const friendShare = (t.shares && t.shares[t.friend]) || 0;
+          if (t.payer === "You") {
+            directBalances[t.friend] += friendShare; // Friend owes you
+          } else if (t.payer === t.friend) {
+            directBalances[t.friend] -= myShare; // You owe friend
+          }
+        } else if (t.type === "settlement" && t.friend) {
+          if (directBalances[t.friend] === undefined) directBalances[t.friend] = 0;
+          if (t.payer === t.friend && t.receiver === "You") {
+            directBalances[t.friend] -= t.amount; // Friend paid you back
+          } else if (t.payer === "You" && t.receiver === t.friend) {
+            directBalances[t.friend] += t.amount; // You paid friend back
+          }
+        }
+      });
+
+      if (appState.friends.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--muted); font-size:0.85rem;">No friends added yet. Add a friend to start direct 1-on-1 splitting!</div>`;
+        return;
+      }
+
+      appState.friends.forEach(f => {
+        const bal = directBalances[f.name] || 0;
+        const row = document.createElement("div");
+        row.className = "settlement-card";
+        row.style.marginBottom = "8px";
+
+        let statusText = "";
+        let badgeColor = "var(--muted)";
+        let badgeBg = "var(--table-header-bg)";
+
+        if (Math.abs(bal) < 0.01) {
+          statusText = "Settled up (₹0.00)";
+          badgeColor = "var(--muted)";
+        } else if (bal > 0) {
+          statusText = `Owes you ${cur}${bal.toFixed(2)}`;
+          badgeColor = "#16a34a";
+          badgeBg = "#dcfce7";
+        } else {
+          statusText = `You owe ${cur}${Math.abs(bal).toFixed(2)}`;
+          badgeColor = "#dc2626";
+          badgeBg = "#fee2e2";
+        }
+
+        row.innerHTML = `
+          <div>
+            <strong>${f.name}</strong> ${f.email ? '<span style="font-size:0.75rem; color:var(--muted); display:block;">' + f.email + '</span>' : ''}
+            <span style="display:inline-block; margin-top:3px; padding:2px 8px; border-radius:4px; font-size:0.8rem; font-weight:700; color:${badgeColor}; background:${badgeBg};">
+              ${statusText}
+            </span>
+          </div>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <button type="button" class="btn btn-secondary" onclick="quickStartDirectExpense('${f.name}')" style="padding:6px 10px; font-size:0.78rem;">➕ Split Bill</button>
+            ${Math.abs(bal) >= 0.01 ? `<button type="button" class="btn btn-settle" onclick="quickStartDirectSettle('${f.name}', ${bal})" style="padding:6px 10px; font-size:0.78rem;">🤝 Settle</button>` : ''}
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    window.setHistoryFilterType = function(type) {
+      historyFilterType = type;
+      document.querySelectorAll(".filter-chip").forEach(b => b.classList.remove("active"));
+      const btn = document.getElementById("filter-" + type);
+      if (btn) btn.classList.add("active");
+      renderTransactions();
+    };
+
+    
     function renderAll() {
+      renderDirectBalances();
       applyTheme();
       renderGroupSelector();
 
@@ -3026,7 +3626,56 @@
 
     function syncUserCloud(user) {
       if (!db || !user) return;
+      const myEmail = (user.email || "").toLowerCase().trim();
+
+      if (myDisplayAccount) {
+        myDisplayAccount.textContent = user.displayName ? `${user.displayName} (${user.email})` : user.email;
+      }
+
+      // If group has 'You', update with user's name
       const g = getGroup();
+      if (user.displayName) {
+        const myFirst = user.displayName.split(" ")[0];
+        if (g.members.includes("You")) {
+          g.members = g.members.map(m => m === "You" ? myFirst : m);
+          saveState();
+        }
+      }
+
+      // 1. Listen for incoming requests targeted to my email
+      if (unsubIncomingRequests) unsubIncomingRequests();
+      unsubIncomingRequests = db.collection("friend_requests")
+        .where("toEmail", "==", myEmail)
+        .onSnapshot((snapshot) => {
+          localIncomingRequests = [];
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            data.id = doc.id;
+            localIncomingRequests.push(data);
+          });
+          renderFriendRequestsUI();
+        }, (err) => console.warn("Incoming requests note:", err));
+
+      // 2. Listen for outgoing requests sent by me
+      if (unsubOutgoingRequests) unsubOutgoingRequests();
+      unsubOutgoingRequests = db.collection("friend_requests")
+        .where("fromEmail", "==", myEmail)
+        .onSnapshot((snapshot) => {
+          localOutgoingRequests = [];
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            data.id = doc.id;
+            localOutgoingRequests.push(data);
+
+            if (data.status === "accepted") {
+              const friendName = data.acceptedByName || data.toEmail.split("@")[0];
+              addApprovedFriend(data.toEmail, friendName);
+            }
+          });
+          renderFriendRequestsUI();
+        }, (err) => console.warn("Outgoing requests note:", err));
+
+      // 3. Listen to active group
       listenToCloudGroup(g.id);
     }
 
@@ -3058,7 +3707,7 @@
             updatedBy: currentUser.email
           }, { merge: true }).catch(() => {});
         }
-      }, (err) => console.warn("Firestore listener note:", err));
+      }, (err) => console.warn("Firestore group note:", err));
     }
 
     window.shareGroupInvite = function() {
