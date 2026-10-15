@@ -191,7 +191,7 @@ h1, h2, h3, .brand-title, .dash-card-title, .metric-val, #home-standing-text, #f
 
 .workspace {
   min-width: 0;
-  padding: 28px 28px 40px;
+  padding: 28px 28px 88px;
   max-width: 1280px;
 }
 .app-page { display: none; animation: rise 0.28s ease; }
@@ -501,17 +501,92 @@ mark { background: #fde68a; color: inherit; border-radius: 4px; padding: 0 2px; 
 .friends-list-container { display: flex; flex-direction: column; gap: 8px; }
 
 .mobile-bottom-nav {
-  display: none; position: fixed; left: 12px; right: 12px; bottom: 12px; height: 64px;
-  background: var(--dock); border: 1px solid var(--line); border-radius: 20px;
-  backdrop-filter: blur(16px); z-index: 30; justify-content: space-around; align-items: center;
-  box-shadow: var(--shadow-lg);
+  display: none; position: fixed; left: 10px; right: 10px; bottom: 12px; z-index: 30;
+  height: 58px; padding: 0; background: transparent; border: 0; box-shadow: none;
+  justify-content: stretch; align-items: stretch; gap: 0;
 }
 .mobile-nav-item {
-  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;
-  background: none; border: 0; color: var(--muted); font-size: 0.62rem; font-weight: 700; cursor: pointer;
+  flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  min-width: 0; height: 58px; overflow: hidden; border: 0; cursor: pointer;
+  background: #f4f4f9; color: #868593;
+  padding: 6px 1px; font-size: 0.58rem; font-weight: 700; line-height: 1;
+  border-radius: 0; white-space: nowrap;
+  transition: margin 0.45s cubic-bezier(0.22, 1, 0.36, 1), border-radius 0.45s cubic-bezier(0.22, 1, 0.36, 1), background 0.35s, color 0.35s;
 }
-.mobile-nav-item svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
-.mobile-nav-item.active { color: var(--primary); }
+[data-theme="dark"] .mobile-nav-item { background: #262626; color: #9b9aa7; }
+.mobile-nav-item:first-child { border-radius: 14px 0 0 14px; }
+.mobile-nav-item:last-child { border-radius: 0 14px 14px 0; }
+.mobile-nav-item.active {
+  background: var(--primary); color: #fff;
+  border-radius: 14px; margin-inline: 7px;
+}
+.mobile-nav-item:has(+ .mobile-nav-item.active) { border-radius: 14px; }
+.mobile-nav-item.active + .mobile-nav-item { border-radius: 14px; }
+.mobile-nav-item svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+@media (prefers-reduced-motion: reduce) {
+  .mobile-nav-item { transition: none; }
+}
+
+.rare-bell { display: inline-grid; margin-left: auto; }
+.rare-bell[hidden] { display: none; }
+.rare-bell svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.rare-bell.is-ringing svg { animation: rare-bell 0.9s ease; transform-origin: 50% 12%; }
+@keyframes rare-bell {
+  0% { transform: rotate(0); }
+  15% { transform: rotate(18deg); }
+  30% { transform: rotate(-16deg); }
+  45% { transform: rotate(12deg); }
+  60% { transform: rotate(-8deg); }
+  100% { transform: rotate(0); }
+}
+
+.rare-delete { display: inline-flex; align-items: center; height: 36px; border-radius: 12px; background: var(--box-bg); overflow: hidden; }
+.rare-delete-trigger, .rare-delete-panel button {
+  border: 0; background: transparent; color: var(--muted); cursor: pointer; font-weight: 700;
+}
+.rare-delete-trigger { width: 36px; height: 36px; display: grid; place-items: center; }
+.rare-delete-trigger svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+.rare-delete-panel { display: flex; gap: 4px; padding-right: 6px; }
+.rare-delete-panel[hidden] { display: none; }
+.rare-delete-panel button { border-radius: 999px; padding: 4px 8px; background: var(--surface-solid); }
+#btn-delete-group { color: var(--danger); }
+.rare-delete.is-open { background: var(--danger-bg); }
+
+.odo-digit { display: inline-block; height: 1.15em; overflow: hidden; vertical-align: bottom; }
+.odo-digit > span { display: flex; flex-direction: column; transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+.odo-digit b { display: block; height: 1.15em; font-weight: inherit; font-style: normal; }
+.odo-mark { display: inline-block; }
+
+.rare-scroll {
+  position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 28;
+  display: flex; flex-direction: column-reverse; align-items: center;
+}
+.rare-scroll-pill, .rare-scroll-list button {
+  border: 1px solid var(--line); background: color-mix(in srgb, var(--surface-solid) 86%, transparent);
+  backdrop-filter: blur(12px); color: var(--text); cursor: pointer;
+}
+.rare-scroll-pill {
+  display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px 0 8px;
+  border-radius: 999px; box-shadow: var(--shadow);
+}
+.rare-scroll-pill svg { width: 22px; height: 22px; }
+.rare-scroll-track, .rare-scroll-prog { fill: none; stroke-width: 2.5; }
+.rare-scroll-track { stroke: var(--line); }
+.rare-scroll-prog { stroke: var(--primary); stroke-linecap: round; transform: rotate(-90deg); transform-origin: 12px 12px; stroke-dasharray: 62.8; stroke-dashoffset: 62.8; }
+.rare-scroll-label { font-size: 0.85rem; font-weight: 700; }
+.rare-scroll-list {
+  list-style: none; margin: 0 0 8px; padding: 6px; min-width: 180px;
+  border: 1px solid var(--line); border-radius: 18px; background: var(--surface-solid); box-shadow: var(--shadow-lg);
+}
+.rare-scroll-list[hidden] { display: none; }
+.rare-scroll-list button { width: 100%; text-align: left; border: 0; background: transparent; border-radius: 12px; padding: 8px 10px; font-weight: 650; }
+.rare-scroll-list button.is-on { background: var(--chip-bg); color: var(--chip-text); }
+.rare-credit { margin: 28px 0 0; color: var(--muted); font-size: 0.75rem; }
+.rare-credit a { color: inherit; }
+@media (max-width: 860px) { .rare-scroll { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .rare-bell.is-ringing svg, .odo-digit > span, .rare-scroll-prog { animation: none; transition: none; }
+}
 
 .modal-backdrop {
   display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.46);
