@@ -7,822 +7,10 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/jpeg" href="fairshare_logo.jpg">
   <title>FairShare - Group Expense Tracker</title>
-  <style>
-    :root {
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --nav-bg: #ffffff;
-      --primary: #0284c7;
-      --primary-hover: #0369a1;
-      --accent: #6366f1;
-      --accent-hover: #4f46e5;
-      --success: #16a34a;
-      --success-hover: #15803d;
-      --danger: #ef4444;
-      --danger-hover: #dc2626;
-      --text: #0f172a;
-      --muted: #64748b;
-      --border: #e2e8f0;
-      --input-bg: #ffffff;
-      --box-bg: #f8fafc;
-      --metric-bg: #f8fafc;
-      --table-header-bg: #f1f5f9;
-      --success-bg: #ecfdf5;
-      --success-text: #065f46;
-      --chip-bg: #f0f9ff;
-      --chip-text: #0369a1;
-      --badge-settle: #fef3c7;
-      --badge-settle-text: #b45309;
-      --hover-item: #f1f5f9;
-      --card-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
-      --card-shadow-hover: 0 10px 20px -3px rgba(15, 23, 42, 0.08), 0 4px 8px -2px rgba(15, 23, 42, 0.04);
-    }
-
-    [data-theme="dark"] {
-      --bg: #090d16;
-      --card-bg: #131b2e;
-      --nav-bg: #101726;
-      --primary: #38bdf8;
-      --primary-hover: #0ea5e9;
-      --accent: #818cf8;
-      --accent-hover: #6366f1;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --border: #232f48;
-      --input-bg: #0d1527;
-      --box-bg: #0d1527;
-      --metric-bg: #0d1527;
-      --table-header-bg: #0d1527;
-      --success-bg: #064e3b;
-      --success-text: #a7f3d0;
-      --chip-bg: #0369a1;
-      --chip-text: #e0f2fe;
-      --badge-settle: #78350f;
-      --badge-settle-text: #fde68a;
-      --hover-item: #1e293b;
-      --card-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.35);
-      --card-shadow-hover: 0 10px 20px -3px rgba(0, 0, 0, 0.5);
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 16px 16px 84px 16px;
-      line-height: 1.5;
-      transition: background-color 0.3s, color 0.3s;
-      min-height: 100vh;
-    }
-
-    #confetti-canvas {
-      position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
-      pointer-events: none; z-index: 9999;
-    }
-
-    /* App Header */
-    .app-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 0 16px 0;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .brand-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-    }
-
-    .logo-container {
-      width: 44px;
-      height: 44px;
-      border-radius: 11px;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #ffffff;
-      box-shadow: 0 4px 8px -1px rgba(0,0,0,0.12);
-      overflow: hidden;
-    }
-
-    .brand-title {
-      font-size: 1.55rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      margin: 0;
-      line-height: 1.1;
-      color: var(--text);
-    }
-
-    .brand-tagline {
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin: 2px 0 0 0;
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .header-actions .btn {
-      white-space: nowrap;
-    }
-
-    /* Navigation Bars (Top on Desktop, Bottom on Mobile) */
-    .desktop-nav {
-      display: flex;
-      background: var(--card-bg);
-      padding: 6px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      margin-bottom: 20px;
-      gap: 6px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-      overflow-x: auto;
-    }
-
-    .nav-tab-btn {
-      flex: 1 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 9px 10px;
-      border: none;
-      background: transparent;
-      color: var(--muted);
-      border-radius: 8px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-
-    .nav-tab-btn:hover {
-      background: var(--hover-item);
-      color: var(--text);
-    }
-
-    .nav-tab-btn.active {
-      background: var(--primary);
-      color: #ffffff !important;
-      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
-    }
-
-    .mobile-bottom-nav {
-      display: none;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 64px;
-      background: var(--nav-bg);
-      border-top: 1px solid var(--border);
-      box-shadow: 0 -4px 12px rgba(0,0,0,0.06);
-      z-index: 900;
-      justify-content: space-around;
-      align-items: center;
-      padding: 0 8px;
-    }
-
-    .mobile-nav-item {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: none;
-      border: none;
-      color: var(--muted);
-      font-size: 0.62rem;
-      font-weight: 600;
-      cursor: pointer;
-      padding: 6px 0;
-      gap: 2px;
-      transition: color 0.15s;
-      white-space: nowrap;
-    }
-
-    .mobile-nav-item.active {
-      color: var(--primary);
-    }
-
-    .mobile-nav-item .nav-icon {
-      font-size: 1.1rem;
-    }
-
-    .form-error {
-      display: none;
-      color: var(--danger);
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      border-radius: 8px;
-      padding: 8px 10px;
-      font-size: 0.84rem;
-      font-weight: 600;
-      margin-top: 10px;
-    }
-
-    [data-theme="dark"] .form-error {
-      background: #3f1d1d;
-      border-color: #7f1d1d;
-    }
-
-    @media (max-width: 640px) {
-      .desktop-nav { display: none; }
-      .mobile-bottom-nav { display: flex; }
-      body { padding-bottom: 84px; }
-      .header-actions { width: 100%; }
-    }
-
-    /* Page Navigation Back Bar */
-    .page-back-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-
-    .btn-back-home {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: none;
-      border: none;
-      color: var(--primary);
-      font-size: 0.92rem;
-      font-weight: 700;
-      cursor: pointer;
-      padding: 0;
-    }
-    .btn-back-home:hover {
-      text-decoration: underline;
-    }
-
-    /* Screen Pages (Single Page App views) */
-    .app-page {
-      display: none;
-      animation: pageFade 0.2s ease;
-    }
-    .app-page.active {
-      display: block;
-    }
-
-    @keyframes pageFade {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Cards */
-    .card {
-      background: var(--card-bg);
-      border-radius: 14px;
-      padding: 22px;
-      box-shadow: var(--card-shadow);
-      border: 1px solid var(--border);
-      margin-bottom: 18px;
-      transition: background-color 0.3s, border-color 0.3s;
-    }
-
-    .card-header-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    h2 {
-      font-size: 1.18rem;
-      font-weight: 700;
-      margin: 0;
-      color: var(--text);
-      letter-spacing: -0.01em;
-    }
-
-    /* Home Dashboard Hero Banner */
-    .home-balance-card {
-      background: linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(99, 102, 241, 0.08));
-      border: 1px solid rgba(2, 132, 199, 0.2);
-      border-radius: 14px;
-      padding: 20px;
-      margin-bottom: 18px;
-    }
-
-    .home-hero-btn {
-      width: 100%;
-      background: var(--primary);
-      color: #ffffff !important;
-      border: none;
-      padding: 16px;
-      border-radius: 12px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
-      transition: all 0.2s ease;
-      margin-bottom: 18px;
-    }
-    .home-hero-btn:hover {
-      background: var(--primary-hover);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(2, 132, 199, 0.4);
-    }
-
-    /* Dashboard Quick Cards Grid */
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin-bottom: 18px;
-    }
-
-    .dash-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: var(--card-shadow);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .dash-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--card-shadow-hover);
-      border-color: var(--primary);
-    }
-
-    .dash-card-icon {
-      font-size: 1.6rem;
-      margin-bottom: 8px;
-    }
-    .dash-card-title {
-      font-weight: 700;
-      font-size: 0.95rem;
-      color: var(--text);
-      margin-bottom: 2px;
-    }
-    .dash-card-desc {
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-
-    .form-group { margin-bottom: 14px; }
-    .form-row { display: flex; gap: 12px; }
-    .form-row .form-group { flex: 1; }
-
-    label {
-      display: block;
-      font-weight: 600;
-      font-size: 0.85rem;
-      margin-bottom: 6px;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 10px 14px;
-      border: 1px solid var(--border);
-      border-radius: 9px;
-      font-size: 0.95rem;
-      background: var(--input-bg);
-      color: var(--text);
-      transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
-    }
-
-    input:focus, select:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.18);
-    }
-
-    .btn {
-      background: var(--primary);
-      color: #ffffff;
-      border: none;
-      padding: 9px 16px;
-      font-size: 0.92rem;
-      font-weight: 600;
-      border-radius: 9px;
-      cursor: pointer;
-      transition: background-color 0.2s, transform 0.15s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      justify-content: center;
-      text-decoration: none;
-    }
-    .btn:hover {
-      background: var(--primary-hover);
-      transform: translateY(-1px);
-    }
-    .btn:active { transform: translateY(0); }
-
-    [data-theme="dark"] .btn { color: #090d16; }
-
-    .btn-secondary {
-      background: var(--box-bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-    .btn-secondary:hover { background: var(--hover-item); }
-
-    .btn-settle {
-      background: var(--accent);
-      color: #ffffff !important;
-    }
-    .btn-settle:hover { background: var(--accent-hover); }
-
-    .btn-export {
-      background: #059669;
-      color: #ffffff !important;
-    }
-    .btn-export:hover { background: #047857; }
-
-    .btn-friends {
-      background: #7c3aed;
-      color: #ffffff !important;
-    }
-    .btn-friends:hover { background: #6d28d9; }
-
-    .btn-icon {
-      background: var(--box-bg);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 8px 12px;
-      border-radius: 9px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: background-color 0.2s;
-    }
-    .btn-icon:hover {
-      background: var(--hover-item);
-    }
-
-    .btn-block { width: 100%; padding: 12px; font-size: 1rem; }
-
-    /* Presets & Badges */
-    .preset-container {
-      display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; margin-bottom: 12px;
-    }
-    .preset-btn {
-      background: var(--box-bg); border: 1px solid var(--border); color: var(--muted);
-      font-size: 0.78rem; padding: 4px 10px; border-radius: 14px; cursor: pointer;
-      font-weight: 500; transition: all 0.15s ease;
-    }
-    .preset-btn:hover {
-      background: var(--primary); color: #ffffff; border-color: var(--primary); transform: scale(1.03);
-    }
-
-    .cat-badge {
-      font-size: 0.72rem; font-weight: 600; padding: 2px 6px; border-radius: 6px;
-      margin-left: 6px; display: inline-flex; align-items: center; gap: 3px;
-    }
-    .cat-badge-auto { background: #e0f2fe; color: #0369a1; }
-    [data-theme="dark"] .cat-badge-auto { background: #0369a1; color: #e0f2fe; }
-    .cat-badge-manual { background: #f1f5f9; color: var(--muted); }
-    [data-theme="dark"] .cat-badge-manual { background: #1e293b; color: var(--muted); }
-
-    /* Group Bar */
-    .group-bar {
-      display: flex; align-items: center; justify-content: space-between;
-      background: var(--box-bg); padding: 10px 14px; border-radius: 10px;
-      border: 1px solid var(--border); margin-bottom: 14px; flex-wrap: wrap; gap: 10px;
-    }
-    .group-select-wrapper {
-      display: flex; align-items: center; gap: 8px; flex: 1; min-width: 220px;
-    }
-
-    /* Tabs inside cards */
-    .tab-group {
-      display: flex; background: var(--box-bg); padding: 4px; border-radius: 9px;
-      gap: 4px; margin-bottom: 14px; border: 1px solid var(--border);
-    }
-    .tab-btn {
-      flex: 1; padding: 8px; font-size: 0.85rem; font-weight: 600; border: none;
-      background: transparent; color: var(--muted); border-radius: 7px; cursor: pointer;
-      transition: all 0.2s; text-align: center;
-    }
-    .tab-btn.active {
-      background: var(--card-bg); color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.06);
-    }
-
-    /* Chips */
-    .chip-container {
-      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;
-    }
-    .chip {
-      background: var(--chip-bg); color: var(--chip-text); padding: 5px 12px;
-      border-radius: 20px; font-size: 0.85rem; font-weight: 600;
-      display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--border);
-    }
-    .chip-remove {
-      cursor: pointer; color: var(--chip-text); font-weight: bold; font-size: 1rem;
-      border: none; background: none; padding: 0; line-height: 1;
-    }
-    .chip-remove:hover { color: var(--danger); }
-
-    /* Breakdown Box */
-    .split-breakdown-box {
-      background: var(--box-bg); border: 1px solid var(--border); border-radius: 10px;
-      padding: 14px; margin-bottom: 14px;
-    }
-    .split-row {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 6px 0; gap: 12px;
-    }
-    .split-row input[type="number"] { width: 110px; padding: 6px 8px; font-size: 0.9rem; }
-    .split-row label { margin-bottom: 0; font-weight: 500; display: flex; align-items: center; gap: 8px; cursor: pointer; }
-
-    .split-validation-msg { font-size: 0.82rem; font-weight: 600; margin-top: 8px; }
-    .msg-valid { color: #16a34a; }
-    .msg-invalid { color: #dc2626; }
-
-    /* Metrics Grid */
-    .summary-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px;
-    }
-    .metric-box {
-      background: var(--metric-bg); padding: 14px 10px; border-radius: 10px;
-      text-align: center; border: 1px solid var(--border); transition: transform 0.2s;
-    }
-    .metric-box:hover { transform: translateY(-2px); }
-    .metric-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; }
-    .metric-val { font-size: 1.25rem; font-weight: 800; color: var(--text); margin-top: 4px; }
-
-    /* Member Spend Table */
-    .member-spend-table {
-      width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.875rem;
-    }
-    .member-spend-table th {
-      text-align: left; padding: 10px 12px; background: var(--table-header-bg);
-      color: var(--muted); font-weight: 600; font-size: 0.78rem;
-      text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border);
-    }
-    .member-spend-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
-    .member-spend-table tr:last-child td { border-bottom: none; }
-
-    /* Toggle Simplify */
-    .toggle-row {
-      display: flex; align-items: center; justify-content: space-between;
-      background: var(--box-bg); padding: 12px 14px; border-radius: 10px;
-      border: 1px solid var(--border); margin-bottom: 14px;
-    }
-    .toggle-desc { font-size: 0.85rem; color: var(--muted); margin-top: 2px; }
-
-    .switch { position: relative; display: inline-block; width: 46px; height: 24px; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider {
-      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #cbd5e1; transition: .3s; border-radius: 24px;
-    }
-    .slider:before {
-      position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
-      background-color: white; transition: .3s; border-radius: 50%;
-    }
-    input:checked + .slider { background-color: var(--primary); }
-    input:checked + .slider:before { transform: translateX(22px); }
-
-    /* Settlement Card */
-    .settlement-card {
-      background: var(--success-bg); border: 1px solid rgba(22, 101, 52, 0.25);
-      border-radius: 10px; padding: 16px; margin-top: 14px;
-    }
-    .settlement-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .settlement-title { font-weight: 700; color: var(--success-text); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
-    .settlement-list { list-style: none; padding: 0; margin: 0; }
-    .settlement-item {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 0; border-bottom: 1px dashed rgba(22, 101, 52, 0.2);
-      font-size: 0.95rem; color: var(--success-text);
-    }
-    .settlement-item:last-child { border-bottom: none; }
-
-    .btn-quick-settle {
-      background: #16a34a; color: white !important; border: none; font-size: 0.8rem; font-weight: 600;
-      padding: 5px 12px; border-radius: 7px; cursor: pointer; transition: all 0.2s;
-    }
-    .btn-quick-settle:hover { background: #15803d; transform: scale(1.05); }
-
-    .settle-up-box {
-      background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px;
-      padding: 16px; margin-bottom: 16px; display: none;
-    }
-    [data-theme="dark"] .settle-up-box { background: #451a03; border-color: #78350f; }
-    .settle-up-box.active { display: block; }
-
-    
-    /* Friend Request & Approval System */
-    .nav-badge {
-      background: #ef4444; color: #fff; font-size: 0.7rem; font-weight: 700;
-      padding: 2px 7px; border-radius: 999px; margin-left: 6px; vertical-align: middle;
-      box-shadow: 0 2px 5px rgba(239,68,68,0.4);
-    }
-    .nav-badge-mobile {
-      position: absolute; top: -4px; right: -8px; background: #ef4444; color: #fff;
-      font-size: 0.65rem; font-weight: 700; padding: 1px 5px; border-radius: 999px;
-    }
-    .badge-count {
-      background: #ef4444; color: white; padding: 2px 8px; border-radius: 12px;
-      font-size: 0.75rem; font-weight: 700; vertical-align: middle; margin-left: 6px;
-    }
-    .incoming-request-card {
-      display: flex; justify-content: space-between; align-items: center; gap: 12px;
-      background: var(--box-bg); border: 2px solid #3b82f6; border-radius: 10px;
-      padding: 14px 16px; margin-bottom: 10px; flex-wrap: wrap;
-      box-shadow: 0 4px 12px rgba(59,130,246,0.12);
-    }
-    [data-theme="dark"] .incoming-request-card {
-      border-color: #60a5fa; background: #1e293b;
-    }
-    .request-avatar {
-      width: 38px; height: 38px; border-radius: 50%; background: #dbeafe; color: #1d4ed8;
-      display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;
-    }
-    [data-theme="dark"] .request-avatar { background: #1e3a8a; color: #bfdbfe; }
-    .request-info { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 200px; }
-    .request-actions { display: flex; gap: 8px; align-items: center; }
-    .btn-approve {
-      background: #10b981; color: white; border: none; padding: 7px 14px;
-      border-radius: 8px; font-weight: 600; font-size: 0.82rem; cursor: pointer;
-      transition: background 0.15s;
-    }
-    .btn-approve:hover { background: #059669; }
-    .btn-decline {
-      background: transparent; color: #ef4444; border: 1px solid #ef4444; padding: 7px 12px;
-      border-radius: 8px; font-weight: 600; font-size: 0.82rem; cursor: pointer;
-      transition: all 0.15s;
-    }
-    .btn-decline:hover { background: #fee2e2; }
-    .request-pending-pill {
-      display: inline-block; background: #fef3c7; color: #b45309;
-      padding: 2px 7px; border-radius: 4px; font-size: 0.72rem; font-weight: 600; margin-top: 3px;
-    }
-    [data-theme="dark"] .request-pending-pill { background: #78350f; color: #fde68a; }
-    .approved-pill {
-      background: #d1fae5; color: #047857; padding: 2px 6px; border-radius: 4px;
-      font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-left: 6px;
-    }
-    [data-theme="dark"] .approved-pill { background: #064e3b; color: #a7f3d0; }
-    .outgoing-request-row {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 14px; background: var(--box-bg); border-radius: 8px;
-      border: 1px dashed var(--border); margin-bottom: 8px;
-    }
-
-    /* Friends UI */
-    .friends-list-container {
-      display: flex; flex-direction: column; gap: 8px; margin-top: 12px; max-height: 240px; overflow-y: auto;
-    }
-    .friend-row {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 14px; background: var(--box-bg); border-radius: 8px; border: 1px solid var(--border);
-    }
-    .friend-code-badge {
-      background: #ede9fe; color: #6d28d9; padding: 3px 8px; border-radius: 6px; font-family: monospace; font-size: 0.85rem; font-weight: 700;
-    }
-    [data-theme="dark"] .friend-code-badge { background: #4c1d95; color: #ddd6fe; }
-
-    /* History & Filter Bar */
-    .filter-search-container {
-      display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;
-    }
-    .search-input-wrapper { flex: 2; min-width: 200px; }
-    .member-filter-wrapper { flex: 1; min-width: 140px; }
-
-    .transaction-list { list-style: none; padding: 0; margin: 0; }
-    .transaction-item {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 12px 14px; border-bottom: 1px solid var(--border);
-      border-radius: 10px; cursor: pointer; transition: background-color 0.15s, transform 0.15s;
-    }
-    .transaction-item:hover { background-color: var(--hover-item); transform: translateX(2px); }
-    .transaction-item:last-child { border-bottom: none; }
-
-    .item-desc { font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .item-subtext { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
-
-    .badge-category {
-      background: var(--box-bg); color: var(--text); border: 1px solid var(--border);
-      font-size: 0.72rem; font-weight: 600; padding: 2px 7px; border-radius: 6px;
-      display: inline-flex; align-items: center; gap: 4px;
-    }
-    .badge-settlement {
-      background: var(--badge-settle); color: var(--badge-settle-text); font-size: 0.72rem;
-      font-weight: 700; padding: 2px 8px; border-radius: 12px; text-transform: uppercase;
-    }
-    .badge-split-type {
-      background: var(--box-bg); color: var(--muted); border: 1px solid var(--border);
-      font-size: 0.72rem; font-weight: 600; padding: 2px 6px; border-radius: 6px;
-    }
-    .badge-receipt {
-      background: #e0e7ff; color: #4338ca; font-size: 0.72rem; font-weight: 600;
-      padding: 2px 6px; border-radius: 6px;
-    }
-    [data-theme="dark"] .badge-receipt { background: #312e81; color: #c7d2fe; }
-
-    .item-right { display: flex; align-items: center; gap: 12px; }
-    .item-amount { font-weight: 700; font-size: 1rem; }
-
-    .btn-delete {
-      background: transparent; border: none; color: #94a3b8; cursor: pointer;
-      font-size: 1.1rem; padding: 4px; border-radius: 4px; transition: color 0.2s, transform 0.15s;
-    }
-    .btn-delete:hover { color: var(--danger); transform: scale(1.15); }
-
-    .empty-state {
-      text-align: center; color: var(--muted); padding: 24px 0; font-style: italic; font-size: 0.9rem;
-    }
-
-    /* Modal Backdrop */
-    .modal-backdrop {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.7); display: none;
-      align-items: center; justify-content: center; z-index: 1000;
-      padding: 16px; backdrop-filter: blur(4px);
-    }
-    .modal-backdrop.active { display: flex; }
-    .modal-content {
-      background: var(--card-bg); border-radius: 16px; width: 100%; max-width: 540px;
-      padding: 24px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-      position: relative; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border);
-      animation: modalSlide 0.2s ease;
-    }
-    @keyframes modalSlide {
-      from { transform: translateY(16px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    .modal-close {
-      position: absolute; top: 16px; right: 16px; background: none; border: none;
-      font-size: 1.4rem; color: var(--muted); cursor: pointer; line-height: 1;
-    }
-    .modal-close:hover { color: var(--danger); }
-
-    .receipt-preview-box {
-      margin-top: 14px; border: 1px solid var(--border); border-radius: 10px;
-      overflow: hidden; background: #000000; text-align: center;
-    }
-    .receipt-preview-box img {
-      max-width: 100%; max-height: 280px; object-fit: contain; display: block; margin: 0 auto; cursor: zoom-in;
-    }
-
-    /* Charts */
-    .chart-container {
-      display: flex; flex-direction: column; align-items: center; margin-top: 14px;
-    }
-    .chart-wrapper {
-      display: flex; align-items: center; justify-content: center; gap: 24px; width: 100%; flex-wrap: wrap;
-    }
-    #chart-visual {
-      width: 100%;
-      min-width: 220px;
-      flex: 1 1 240px;
-    }
-    .chart-legend {
-      display: flex; flex-direction: column; gap: 6px; min-width: 180px;
-    }
-    .legend-item {
-      display: flex; align-items: center; justify-content: space-between;
-      font-size: 0.82rem; gap: 12px; padding: 4px 6px; border-radius: 6px; transition: background-color 0.15s;
-    }
-    .legend-item:hover { background-color: var(--hover-item); }
-    .legend-color-dot {
-      width: 12px; height: 12px; border-radius: 3px; display: inline-block; margin-right: 6px;
-    }
-    .pie-slice {
-      transition: transform 0.2s ease, opacity 0.2s ease; cursor: pointer;
-    }
-    .pie-slice:hover {
-      opacity: 0.85; transform: scale(1.03); transform-origin: center;
-    }
-  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="fairshare.css">
   <!-- Firebase SDKs (Official Google CDNs) -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
@@ -833,6 +21,8 @@
 
   <canvas id="confetti-canvas"></canvas>
 
+  <div class="app-shell">
+  <aside class="command-dock">
   <!-- App Header -->
   <header class="app-header">
     <div class="brand-group" onclick="navigateTo('home')">
@@ -860,50 +50,80 @@
 
     <!-- Action Buttons -->
     <div class="header-actions">
-      <button type="button" id="btn-google-auth" class="btn btn-secondary" onclick="handleAuthClick()" style="font-size:0.82rem; padding:7px 12px;">
-        <span id="auth-btn-label">G Sign In</span>
+      <button type="button" id="btn-google-auth" class="btn btn-secondary" onclick="handleAuthClick()">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg>
+        <span id="auth-btn-label">Sign in</span>
       </button>
       <button type="button" id="btn-theme-toggle" class="btn btn-secondary">
-        <span id="theme-btn-text">🌙 Dark Mode</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 14.5A8.5 8.5 0 0 1 9.5 3 7 7 0 1 0 21 14.5z"/></svg>
+        <span id="theme-btn-text">Dark mode</span>
       </button>
       <button type="button" id="btn-export-csv" class="btn btn-export" title="Export entire ledger to CSV">
-        <span>📥 Export CSV</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v10M8 10l4 4 4-4"/><path d="M5 19h14"/></svg>
+        <span class="label-long">Export CSV</span>
       </button>
     </div>
   </header>
 
-  <!-- Desktop Navigation Bar (Top) -->
-  <nav class="desktop-nav">
+  <div class="dock-group">
+    <label for="group-selector">Active group</label>
+    <select id="group-selector"></select>
+  </div>
+
+  <nav class="desktop-nav" aria-label="Primary">
     <button type="button" class="nav-tab-btn active" data-page="home" onclick="navigateTo('home')">
-      <span>🏠</span> Home Dashboard
+      <svg viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1z"/></svg>
+      Home
     </button>
     <button type="button" class="nav-tab-btn" data-page="add-expense" onclick="navigateTo('add-expense')">
-      <span>➕</span> Add Expense
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      Add expense
     </button>
     <button type="button" class="nav-tab-btn" data-page="balances" onclick="navigateTo('balances')">
-      <span>⚖️</span> Balances & Settle
+      <svg viewBox="0 0 24 24"><path d="M12 3v18M5 8h14M7 16h10"/><path d="M4 8l2 8h4L8 8M14 8l-2 8h4l2-8"/></svg>
+      Balances
     </button>
     <button type="button" class="nav-tab-btn" data-page="history" onclick="navigateTo('history')">
-      <span>📝</span> History
+      <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+      History
     </button>
     <button type="button" class="nav-tab-btn" data-page="analytics" onclick="navigateTo('analytics')">
-      <span>📊</span> Analytics
+      <svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16"/><path d="M8 15v-4M12 15V8M16 15v-6"/></svg>
+      Analytics
     </button>
     <button type="button" class="nav-tab-btn" data-page="friends" onclick="navigateTo('friends')">
-      <span>👥</span> Friends & Groups <span id="desktop-requests-badge" class="nav-badge" style="display:none;">0</span>
+      <svg viewBox="0 0 24 24"><path d="M16 19v-1a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v1"/><circle cx="10" cy="8" r="3"/><path d="M20 19v-1a3 3 0 0 0-2.2-2.9M16 5.1a3 3 0 0 1 0 5.8"/></svg>
+      Friends <span id="desktop-requests-badge" class="nav-badge" style="display:none;">0</span>
     </button>
   </nav>
+  </aside>
+  <main class="workspace">
 
   <!-- ================= PAGE 1: HOME DASHBOARD ================= -->
   <section id="page-home" class="app-page active">
     <!-- Executive Standing Banner -->
     <div class="home-balance-card">
-      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 8px;">
-        <span style="font-size:0.75rem; text-transform:uppercase; font-weight:700; color:var(--muted);">Your Overall Standing:</span>
-        <span id="home-standing-badge" style="font-size:0.8rem; font-weight:700; padding:2px 8px; border-radius:6px; background:#e0f2fe; color:#0369a1;">Live Balance</span>
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
+          <span class="eyebrow">Your overall standing</span>
+          <span id="home-standing-badge">Live</span>
+        </div>
+        <div id="home-standing-text">All settled up!</div>
+        <div id="home-standing-sub">You neither owe nor are owed money in the active group.</div>
+        <div class="hero-actions">
+          <button type="button" class="btn" onclick="navigateTo('add-expense')">
+            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            Add an expense
+          </button>
+          <button type="button" class="btn btn-secondary" onclick="navigateTo('balances')">Settle up</button>
+          <button type="button" class="btn btn-secondary" onclick="shareGroupInvite()">Invite link</button>
+        </div>
       </div>
-      <div id="home-standing-text" style="font-size:1.45rem; font-weight:800; color:var(--text); margin-bottom:4px;">All settled up!</div>
-      <div id="home-standing-sub" style="font-size:0.82rem; color:var(--muted);">You neither owe nor are owed money in the active group.</div>
+      <div>
+        <span class="eyebrow">Active group</span>
+        <h2 style="margin:6px 0 4px;"> <span id="home-group-name">My Group</span></h2>
+        <div id="home-group-stats" style="color:var(--muted); font-size:0.85rem;">0 expenses</div>
+      </div>
     </div>
 
     <!-- Front & Center Primary Action Button -->
@@ -914,52 +134,44 @@
     <!-- Quick Navigation Cards Grid -->
     <div class="dashboard-grid">
       <div class="dash-card" onclick="navigateTo('balances')">
-        <div class="dash-card-icon">⚖️</div>
-        <div>
-          <div class="dash-card-title">Balances & Settle</div>
-          <div class="dash-card-desc" id="dash-settle-desc">Review who owes whom & settle debts</div>
-        </div>
+        <div class="icon-badge"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16"/><path d="M8 16l3-4 3 2 4-6"/></svg></div>
+        <div class="dash-card-title">Who pays whom</div>
+        <div class="dash-card-desc" id="dash-settle-desc">Review who owes whom</div>
+        <div id="home-debt-preview"></div>
       </div>
 
       <div class="dash-card" onclick="navigateTo('history')">
-        <div class="dash-card-icon">📝</div>
-        <div>
-          <div class="dash-card-title">Expense History</div>
-          <div class="dash-card-desc" id="dash-history-desc">0 transactions recorded</div>
-        </div>
+        <div class="icon-badge"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div>
+        <div class="dash-card-title">Ledger</div>
+        <div class="dash-card-desc" id="dash-history-desc">0 transactions recorded</div>
       </div>
 
       <div class="dash-card" onclick="navigateTo('analytics')">
-        <div class="dash-card-icon">📊</div>
-        <div>
-          <div class="dash-card-title">Spending Analytics</div>
-          <div class="dash-card-desc">Category Pie & Bar charts</div>
-        </div>
+        <div class="icon-badge"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16"/><path d="M8 15v-4M12 15V8M16 15v-6"/></svg></div>
+        <div class="dash-card-title">Spending mix</div>
+        <div class="dash-card-desc" id="dash-analytics-desc">Category mix appears after the first bill</div>
       </div>
 
       <div class="dash-card" onclick="navigateTo('friends')">
-        <div class="dash-card-icon">👥</div>
-        <div>
-          <div class="dash-card-title">Friends & Groups</div>
-          <div class="dash-card-desc" id="dash-friends-desc">Manage groups & connected friends</div>
-        </div>
+        <div class="icon-badge"><svg viewBox="0 0 24 24"><path d="M16 19v-1a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v1"/><circle cx="10" cy="8" r="3"/></svg></div>
+        <div class="dash-card-title">People</div>
+        <div class="dash-card-desc" id="dash-friends-desc">Manage groups and friends</div>
       </div>
     </div>
 
     <!-- Active Group Card -->
-    <div class="card">
+    <div class="card home-members-card">
       <div class="card-header-row">
         <div>
-          <h2 style="margin:0;">Active Group: <span id="home-group-name" style="color:var(--primary);">My Group</span></h2>
-          <span style="font-size:0.8rem; color:var(--muted);" id="home-group-stats">3 members • ₹0.00 spent</span>
+          <h2 style="margin:0;">Members</h2>
+          <span style="font-size:0.8rem; color:var(--muted);">In the active group</span>
         </div>
-        <button type="button" class="btn btn-secondary" onclick="navigateTo('friends')" style="padding:6px 12px; font-size:0.8rem;">Switch Group ▾</button>
+        <button type="button" class="btn btn-secondary" onclick="navigateTo('friends')">Manage</button>
       </div>
       <div id="home-members-chips" class="chip-container"></div>
     </div>
 
-    <!-- Recent Activity Preview -->
-    <div class="card">
+    <div class="card home-recent-card">
       <div class="card-header-row">
         <h2 style="margin:0;">Recent Activity</h2>
         <button type="button" class="btn btn-secondary" onclick="navigateTo('history')" style="padding:6px 10px; font-size:0.8rem;">View All History →</button>
@@ -979,29 +191,29 @@
     <div class="card">
       <h2 id="form-heading" style="margin-bottom:14px;">Add an Expense</h2>
 
-      <!-- Quick Presets -->
-      <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
-        <span style="font-size: 0.78rem; font-weight: 600; color: var(--muted);">Quick Presets:</span>
-        <div class="preset-container" style="margin: 0;">
-          <button type="button" class="preset-btn" onclick="applyPreset('Chai & Snacks', 'Food')">☕ Chai & Snacks</button>
-          <button type="button" class="preset-btn" onclick="applyPreset('Dinner', 'Food')">🍕 Dinner</button>
-          <button type="button" class="preset-btn" onclick="applyPreset('Uber / Auto Ride', 'Transport')">🚕 Auto / Cab</button>
-          <button type="button" class="preset-btn" onclick="applyPreset('Grocery Run', 'Groceries')">🛒 Groceries</button>
-          <button type="button" class="preset-btn" onclick="applyPreset('Movie Tickets', 'Entertainment')">🍿 Movie</button>
-          <button type="button" class="preset-btn" onclick="applyPreset('WiFi & Electricity', 'Utilities')">💡 Bills</button>
+      <div class="form-group amount-stage">
+        <label for="amount">Amount (<span class="currency-label">₹</span>)</label>
+        <input type="number" id="amount" step="0.01" min="0.01" placeholder="0.00" required inputmode="decimal">
+      </div>
+
+      <div style="margin-bottom: 14px;">
+        <span class="eyebrow">Quick presets</span>
+        <div class="preset-container" style="margin-top: 8px;">
+          <button type="button" class="preset-btn" onclick="applyPreset('Chai & Snacks', 'Food')">Chai</button>
+          <button type="button" class="preset-btn" onclick="applyPreset('Dinner', 'Food')">Dinner</button>
+          <button type="button" class="preset-btn" onclick="applyPreset('Uber / Auto Ride', 'Transport')">Cab</button>
+          <button type="button" class="preset-btn" onclick="applyPreset('Grocery Run', 'Groceries')">Groceries</button>
+          <button type="button" class="preset-btn" onclick="applyPreset('Movie Tickets', 'Entertainment')">Movie</button>
+          <button type="button" class="preset-btn" onclick="applyPreset('WiFi & Electricity', 'Utilities')">Bills</button>
         </div>
       </div>
 
       <!-- Expense Type Toggle: Group vs 1-on-1 Direct Friend -->
       <div style="margin-bottom: 16px;">
         <label style="font-size:0.8rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-bottom:6px; display:block;">Split Expense With:</label>
-        <div style="display:flex; gap:8px; background:var(--box-bg); padding:4px; border-radius:10px; border:1px solid var(--border);">
-          <button type="button" id="btn-scope-group" class="btn" onclick="setExpenseScope('group')" style="flex:1; padding:8px 12px; font-size:0.85rem; font-weight:600; background:var(--primary); color:white; border:none; border-radius:8px;">
-            👥 Group Expense
-          </button>
-          <button type="button" id="btn-scope-friend" class="btn" onclick="setExpenseScope('friend')" style="flex:1; padding:8px 12px; font-size:0.85rem; font-weight:600; background:transparent; color:var(--text); border:none; border-radius:8px;">
-            👤 1-on-1 with a Friend
-          </button>
+        <div class="scope-toggle">
+          <button type="button" id="btn-scope-group" class="btn is-on" onclick="setExpenseScope('group')">Group expense</button>
+          <button type="button" id="btn-scope-friend" class="btn" onclick="setExpenseScope('friend')">1-on-1 with a friend</button>
         </div>
       </div>
 
@@ -1033,25 +245,21 @@
           <div class="form-group" style="flex: 1;">
             <label for="category-select" style="display: flex; align-items: center;">
               <span>Category</span>
-              <span id="cat-detect-badge" class="cat-badge cat-badge-auto" style="display:none;">✨ Auto</span>
+              <span id="cat-detect-badge" class="cat-badge cat-badge-auto" style="display:none;">Auto</span>
             </label>
             <select id="category-select">
-              <option value="Food">🍔 Food & Dining</option>
-              <option value="Transport">🚕 Transport & Fuel</option>
-              <option value="Stay">🏨 Stay & Hotel</option>
-              <option value="Groceries">🛒 Groceries & Market</option>
-              <option value="Entertainment">🎬 Entertainment</option>
-              <option value="Utilities">💡 Utilities & Bills</option>
-              <option value="Other">📦 Other</option>
+              <option value="Food">Food & Dining</option>
+              <option value="Transport">Transport & Fuel</option>
+              <option value="Stay">Stay & Hotel</option>
+              <option value="Groceries">Groceries & Market</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Utilities">Utilities & Bills</option>
+              <option value="Other">Other</option>
             </select>
           </div>
         </div>
 
         <div class="form-row">
-          <div class="form-group" style="flex: 1;">
-            <label for="amount">Amount (<span class="currency-label">₹</span>)</label>
-            <input type="number" id="amount" step="0.01" min="0.01" placeholder="0.00" required>
-          </div>
           <div class="form-group" style="flex: 1;">
             <label for="payer-select">Who paid?</label>
             <select id="payer-select" required></select>
@@ -1069,11 +277,12 @@
 
         <!-- Receipt Photo Attachment -->
         <div class="form-group">
-          <label for="receipt-file">Attach Bill / Receipt Photo (Optional)</label>
-          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-            <input type="file" id="receipt-file" accept="image/*" style="padding: 6px; flex: 1; min-width: 200px;">
-            <button type="button" id="btn-clear-receipt" class="btn btn-secondary" style="display:none; padding: 6px 12px; font-size: 0.85rem;">Remove Photo</button>
-          </div>
+          <label for="receipt-file">Receipt photo, optional</label>
+          <label class="dropzone" id="receipt-dropzone">
+            <input type="file" id="receipt-file" accept="image/*">
+            <span><strong>Drop a bill here</strong><br>or click to browse. We will try to read the total.</span>
+          </label>
+          <button type="button" id="btn-clear-receipt" class="btn btn-secondary" style="display:none; margin-top:8px;">Remove photo</button>
           <div id="receipt-upload-preview" style="display:none; margin-top: 10px;">
             <div style="display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap;">
               <img id="receipt-thumb" src="" alt="Receipt Preview" style="max-height: 90px; border-radius: 8px; border: 1px solid var(--border); box-shadow:0 2px 6px rgba(0,0,0,0.06);">
@@ -1123,6 +332,8 @@
       <button type="button" id="btn-toggle-settle-form" class="btn btn-settle" style="padding:6px 12px; font-size:0.82rem;">+ Custom Settlement</button>
     </div>
 
+    <div class="balances-layout">
+    <div class="balances-side">
     <!-- Overview Metrics Grid -->
     <div class="summary-grid">
       <div class="metric-box">
@@ -1177,6 +388,7 @@
         <span class="slider"></span>
       </label>
     </div>
+    </div>
 
     <!-- Suggested Settlements Card -->
     <div class="settlement-card">
@@ -1185,6 +397,7 @@
         <span style="font-size: 0.75rem; color: var(--success-text); font-weight: 600;">Click "Settle" to log payment</span>
       </div>
       <ul id="settlement-list" class="settlement-list"></ul>
+    </div>
     </div>
 
     <!-- Member Standing Table -->
@@ -1252,7 +465,7 @@
 
       <div class="filter-search-container">
         <div class="search-input-wrapper">
-          <input type="text" id="search-query" placeholder="🔍 Search description, category, or notes...">
+          <input type="text" id="search-query" placeholder="Search description, category, or notes">
         </div>
         <div class="member-filter-wrapper">
           <select id="filter-member-select">
@@ -1261,7 +474,10 @@
         </div>
       </div>
 
-      <div id="empty-msg" class="empty-state">No transactions recorded yet in this group.</div>
+      <div id="empty-msg" class="empty-state">
+        <p>No transactions in this view yet.</p>
+        <button type="button" class="btn" onclick="loadSampleDemoData()">Load sample demo data</button>
+      </div>
       <ul id="transaction-list" class="transaction-list"></ul>
     </div>
   </section>
@@ -1276,12 +492,15 @@
     <div class="card">
       <div class="card-header-row">
         <h2>Category Spending Breakdown</h2>
-        <div class="tab-group" style="margin-bottom: 0; width: 140px;">
+        <div class="tab-group chart-switch" style="margin-bottom: 0; width: 140px;">
           <button type="button" class="tab-btn active" id="btn-chart-pie">Pie</button>
           <button type="button" class="tab-btn" id="btn-chart-bar">Bar</button>
         </div>
       </div>
-      <div id="chart-empty" class="empty-state">No category spending data yet. Add an expense to see analytics!</div>
+      <div id="chart-empty" class="empty-state">
+        <p>No category spending yet.</p>
+        <button type="button" class="btn" onclick="loadSampleDemoData()">Load sample demo data</button>
+      </div>
       <div id="chart-area" class="chart-container" style="display: none;">
         <div class="chart-wrapper">
           <div id="chart-visual" style="display: flex; justify-content: center; align-items: center;"></div>
@@ -1295,8 +514,10 @@
   <section id="page-friends" class="app-page">
     <div class="page-back-bar">
       <button type="button" class="btn-back-home" onclick="navigateTo('home')">← Back to Home</button>
-      <button type="button" id="btn-new-group-modal" class="btn" style="padding:6px 12px; font-size:0.82rem;">+ New Group</button>
+      <button type="button" id="btn-new-group-modal" class="btn" style="padding:6px 12px; font-size:0.82rem;">New group</button>
     </div>
+    <div class="friends-workspace">
+    <div class="friends-col">
 
     <!-- Active User & Google Account Status -->
     <div class="card" style="padding: 14px 18px; margin-bottom: 16px; background: var(--box-bg);">
@@ -1307,8 +528,8 @@
             <strong id="my-display-account" style="font-size:1rem; color:var(--text);">Not signed in</strong>
           </div>
         </div>
-        <button type="button" id="btn-copy-my-email" class="btn btn-secondary" onclick="copyMyEmail()" style="padding:6px 12px; font-size:0.82rem;">
-          📋 Copy My Email
+        <button type="button" id="btn-copy-my-email" class="btn btn-secondary" onclick="copyMyEmail()">
+          Copy my email
         </button>
       </div>
       <div style="margin-top:6px; font-size:0.78rem; color:var(--muted);">
@@ -1327,13 +548,12 @@
       
       <div class="group-bar">
         <div class="group-select-wrapper">
-          <label for="group-selector" style="margin-bottom: 0; white-space: nowrap;">Active Group:</label>
-          <select id="group-selector" style="font-weight: 600;"></select>
+          <span style="font-size:0.85rem; color:var(--muted);">Switch the active group from the sidebar.</span>
         </div>
         <div style="display: flex; gap: 6px;">
-          <button type="button" id="btn-share-group-invite" class="btn btn-secondary" onclick="shareGroupInvite()" style="padding: 6px 10px; font-size: 0.82rem;" title="Share group invite link">🔗 Invite Link</button>
-          <button type="button" id="btn-rename-group" class="btn btn-secondary" style="padding: 6px 10px; font-size: 0.82rem;" title="Rename active group">✏️ Rename</button>
-          <button type="button" id="btn-delete-group" class="btn btn-secondary" style="padding: 6px 10px; font-size: 0.82rem;" title="Delete active group">🗑️</button>
+          <button type="button" id="btn-share-group-invite" class="btn btn-secondary" onclick="shareGroupInvite()" title="Share group invite link">Invite link</button>
+          <button type="button" id="btn-rename-group" class="btn btn-secondary" title="Rename active group">Rename</button>
+          <button type="button" id="btn-delete-group" class="btn btn-secondary" title="Delete active group">Delete</button>
         </div>
       </div>
 
@@ -1383,6 +603,8 @@
         <div id="members-container" class="chip-container"></div>
       </div>
     </div>
+    </div>
+    <div class="friends-col">
 
     <!-- 2. INCOMING FRIEND REQUESTS CARD (REQUIRES APPROVAL) -->
     <div class="card" id="incoming-requests-card" style="border: 2px solid var(--primary);">
@@ -1420,12 +642,8 @@
         
         <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
           <span style="font-size:0.75rem; color:var(--muted); font-weight:600;">Or send actual message to their inbox:</span>
-          <button type="button" class="btn btn-secondary" onclick="openInviteInGmail()" style="padding:5px 10px; font-size:0.78rem;">
-            ✉️ Open in Gmail
-          </button>
-          <button type="button" class="btn btn-secondary" onclick="shareViaWhatsApp()" style="padding:5px 10px; font-size:0.78rem; color:#16a34a; border-color:#86efac;">
-            💬 Share via WhatsApp
-          </button>
+          <button type="button" class="btn btn-secondary" onclick="openInviteInGmail()">Open in Gmail</button>
+          <button type="button" class="btn btn-secondary" onclick="shareViaWhatsApp()">Share via WhatsApp</button>
         </div>
         
         <span style="font-size:0.73rem; color:var(--muted); display:block; margin-top:6px;">
@@ -1462,32 +680,39 @@
       <label style="font-size:0.82rem; font-weight:600; color:var(--muted);">Friends List:</label>
       <div id="friends-list-container" class="friends-list-container"></div>
     </div>
+    </div>
+    </div>
   </section>
+  </main>
+  </div>
 
   <!-- Mobile Bottom Navigation Bar (Sticky on phones) -->
   <nav class="mobile-bottom-nav">
     <button type="button" class="mobile-nav-item active" data-page="home" onclick="navigateTo('home')">
-      <span class="nav-icon">🏠</span>
+      <svg viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1z"/></svg>
       <span>Home</span>
     </button>
     <button type="button" class="mobile-nav-item" data-page="add-expense" onclick="navigateTo('add-expense')">
-      <span class="nav-icon">➕</span>
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
       <span>Add</span>
     </button>
     <button type="button" class="mobile-nav-item" data-page="balances" onclick="navigateTo('balances')">
-      <span class="nav-icon">⚖️</span>
+      <svg viewBox="0 0 24 24"><path d="M12 3v18M5 8h14M7 16h10"/></svg>
       <span>Balances</span>
     </button>
     <button type="button" class="mobile-nav-item" data-page="history" onclick="navigateTo('history')">
-      <span class="nav-icon">📝</span>
+      <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
       <span>History</span>
     </button>
     <button type="button" class="mobile-nav-item" data-page="analytics" onclick="navigateTo('analytics')">
-      <span class="nav-icon">📊</span>
+      <svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16"/><path d="M8 15v-4M12 15V8M16 15v-6"/></svg>
       <span>Charts</span>
     </button>
     <button type="button" class="mobile-nav-item" data-page="friends" onclick="navigateTo('friends')">
-      <span class="nav-icon" style="position:relative;">👥<span id="mobile-requests-badge" class="nav-badge-mobile" style="display:none;">0</span></span>
+      <span style="position:relative; display:grid;">
+        <svg viewBox="0 0 24 24"><path d="M16 19v-1a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v1"/><circle cx="10" cy="8" r="3"/></svg>
+        <span id="mobile-requests-badge" class="nav-badge-mobile" style="display:none;">0</span>
+      </span>
       <span>Friends</span>
     </button>
   </nav>
@@ -1593,8 +818,8 @@
     let deferredPrompt = null;
 
     const CATEGORY_ICONS = {
-      "Food": "🍔", "Transport": "🚕", "Stay": "🏨", "Groceries": "🛒",
-      "Entertainment": "🎬", "Utilities": "💡", "Other": "📦"
+      "Food": "F", "Transport": "T", "Stay": "S", "Groceries": "G",
+      "Entertainment": "E", "Utilities": "U", "Other": "O"
     };
 
     const CATEGORY_COLORS = {
@@ -1678,6 +903,13 @@
         appState.activeGroupId = Object.keys(appState.groups)[0];
       }
       return appState.groups[appState.activeGroupId];
+    }
+
+    function highlight(text, query) {
+      const safe = escapeHtml(text || "");
+      if (!query) return safe;
+      const needle = escapeHtml(query).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return safe.replace(new RegExp(needle, "ig"), (match) => `<mark>${match}</mark>`);
     }
 
     function escapeHtml(value) {
@@ -1952,7 +1184,7 @@
     function applyTheme() {
       document.documentElement.setAttribute("data-theme", appState.theme);
       if (themeBtnText) {
-        themeBtnText.textContent = appState.theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode";
+        themeBtnText.textContent = appState.theme === "dark" ? "Light mode" : "Dark mode";
       }
     }
 
@@ -2394,8 +1626,8 @@
             </span>
           </div>
           <div style="display:flex; gap:6px; align-items:center;">
-            <button type="button" class="btn btn-secondary" onclick="quickStartDirectExpense('${f.name}')" style="padding:4px 8px; font-size:0.75rem;">➕ Split</button>
-            ${Math.abs(friendBal) > 0.01 ? `<button type="button" class="btn btn-settle" onclick="quickStartDirectSettle('${f.name}', ${friendBal})" style="padding:4px 8px; font-size:0.75rem;">🤝 Settle</button>` : ''}
+            <button type="button" class="btn btn-secondary" onclick="quickStartDirectExpense('${f.name}')" style="padding:4px 8px; font-size:0.75rem;">Split</button>
+            ${Math.abs(friendBal) > 0.01 ? `<button type="button" class="btn btn-settle" onclick="quickStartDirectSettle('${f.name}', ${friendBal})" style="padding:4px 8px; font-size:0.75rem;">Settle</button>` : ''}
             <button type="button" class="btn-delete" onclick="deleteFriendFromRoster('${f.id}')" title="Remove friend">&times;</button>
           </div>
         `;
@@ -2586,14 +1818,14 @@
       const friendBox = document.getElementById("direct-friend-box");
 
       if (scope === "group") {
-        if (btnGroup) { btnGroup.style.background = "var(--primary)"; btnGroup.style.color = "white"; }
-        if (btnFriend) { btnFriend.style.background = "transparent"; btnFriend.style.color = "var(--text)"; }
+        if (btnGroup) { btnGroup.classList.add("is-on"); btnGroup.style.background = ""; btnGroup.style.color = ""; }
+        if (btnFriend) { btnFriend.classList.remove("is-on"); btnFriend.style.background = ""; btnFriend.style.color = ""; }
         if (friendBox) friendBox.style.display = "none";
         if (formHeading) formHeading.textContent = "Add a Group Expense";
         renderMembers();
       } else {
-        if (btnFriend) { btnFriend.style.background = "var(--primary)"; btnFriend.style.color = "white"; }
-        if (btnGroup) { btnGroup.style.background = "transparent"; btnGroup.style.color = "var(--text)"; }
+        if (btnFriend) { btnFriend.classList.add("is-on"); btnFriend.style.background = ""; btnFriend.style.color = ""; }
+        if (btnGroup) { btnGroup.classList.remove("is-on"); btnGroup.style.background = ""; btnGroup.style.color = ""; }
         if (friendBox) friendBox.style.display = "block";
         if (formHeading) formHeading.textContent = "Add a 1-on-1 Expense";
         renderDirectFriendDropdown();
@@ -2907,11 +2139,11 @@
       if (type === "auto") {
         catDetectBadge.style.display = "inline-flex";
         catDetectBadge.className = "cat-badge cat-badge-auto";
-        catDetectBadge.textContent = "✨ Auto";
+        catDetectBadge.textContent = "Auto";
       } else if (type === "manual") {
         catDetectBadge.style.display = "inline-flex";
         catDetectBadge.className = "cat-badge cat-badge-manual";
-        catDetectBadge.textContent = "✏️ Manual";
+        catDetectBadge.textContent = "Manual";
       } else {
         catDetectBadge.style.display = "none";
       }
@@ -3163,6 +2395,74 @@
       window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
     };
 
+    const receiptDropzone = document.getElementById("receipt-dropzone");
+    if (receiptDropzone && receiptFileInput) {
+      ["dragenter", "dragover"].forEach((name) => {
+        receiptDropzone.addEventListener(name, (e) => {
+          e.preventDefault();
+          receiptDropzone.classList.add("is-hot");
+        });
+      });
+      ["dragleave", "drop"].forEach((name) => {
+        receiptDropzone.addEventListener(name, (e) => {
+          e.preventDefault();
+          receiptDropzone.classList.remove("is-hot");
+        });
+      });
+      receiptDropzone.addEventListener("drop", (e) => {
+        const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+        if (!file) return;
+        const transfer = new DataTransfer();
+        transfer.items.add(file);
+        receiptFileInput.files = transfer.files;
+        receiptFileInput.dispatchEvent(new Event("change"));
+      });
+    }
+
+    window.loadSampleDemoData = function() {
+      const g = getGroup();
+      if (g.transactions.length && !confirm("Replace this group's expenses with sample demo data?")) return;
+      const people = g.members.length ? g.members.slice() : ["You"];
+      const payer = people[0];
+      const samples = [
+        ["Chai & Snacks", 240, "Food"],
+        ["Dinner", 1860, "Food"],
+        ["Auto ride", 320, "Transport"],
+        ["Grocery run", 940, "Groceries"],
+        ["Movie tickets", 760, "Entertainment"]
+      ];
+      g.transactions = samples.map((row, index) => {
+        const share = Math.round((row[1] / people.length) * 100) / 100;
+        const shares = {};
+        people.forEach((name) => { shares[name] = share; });
+        const drift = Math.round((row[1] - share * people.length) * 100) / 100;
+        shares[payer] = Math.round((shares[payer] + drift) * 100) / 100;
+        const day = new Date();
+        day.setDate(day.getDate() - index);
+        const iso = day.toISOString().slice(0, 10);
+        return {
+          id: Date.now() + index,
+          type: "expense",
+          scope: "group",
+          friend: null,
+          desc: row[0],
+          amount: row[1],
+          payer: payer,
+          category: row[2],
+          shares: shares,
+          splitMode: "equal",
+          date: formatDisplayDate(iso),
+          dateISO: iso,
+          notes: "",
+          timestamp: day.getTime(),
+          receipt: null
+        };
+      });
+      saveState();
+      renderAll();
+      navigateTo("analytics");
+    };
+
     if (receiptFileInput) {
       receiptFileInput.addEventListener("change", (e) => {
         const file = e.target.files[0];
@@ -3399,14 +2699,14 @@
         if (!settleUpBox) return;
         const isHidden = settleUpBox.style.display === "none";
         settleUpBox.style.display = isHidden ? "block" : "none";
-        btnToggleSettleForm.textContent = isHidden ? "✕ Hide Settle Up" : "🤝 Record a Settlement";
+        btnToggleSettleForm.textContent = isHidden ? "Hide settle up" : "Record a settlement";
       });
     }
 
     if (btnCancelSettle) {
       btnCancelSettle.addEventListener("click", () => {
         if (settleUpBox) settleUpBox.style.display = "none";
-        if (btnToggleSettleForm) btnToggleSettleForm.textContent = "🤝 Record a Settlement";
+        if (btnToggleSettleForm) btnToggleSettleForm.textContent = "Record a settlement";
       });
     }
 
@@ -3446,7 +2746,7 @@
         renderAll();
 
         if (settleUpBox) settleUpBox.style.display = "none";
-        if (btnToggleSettleForm) btnToggleSettleForm.textContent = "🤝 Record a Settlement";
+        if (btnToggleSettleForm) btnToggleSettleForm.textContent = "Record a settlement";
       });
     }
 
@@ -3538,10 +2838,10 @@
           const balClass = bal > 0.009 ? "text-success" : (bal < -0.009 ? "text-danger" : "text-muted");
 
           tr.innerHTML = `
-            <td><strong>${escapeHtml(m)}</strong></td>
+            <td><div class="member-cell"><span class="avatar">${escapeHtml(m.slice(0,1).toUpperCase())}</span><strong>${escapeHtml(m)}</strong></div></td>
             <td style="text-align:right;">${formatMoney(spent, cur)}</td>
             <td style="text-align:right;">${formatMoney(shareOwed, cur)}</td>
-            <td class="${balClass}" style="font-weight:600; text-align:right;">${formatSignedMoney(bal, cur)}</td>
+            <td style="text-align:right;"><span class="${balClass} bal">${formatSignedMoney(bal, cur)}</span></td>
             <td style="text-align:center;"></td>
           `;
           const statementBtn = document.createElement("button");
@@ -3575,14 +2875,19 @@
         settlementHeaderLabel.textContent = simplified ? "Suggested Debt Settlements" : "Pairwise Balances";
       }
 
+      const debtPreview = document.getElementById("home-debt-preview");
+      const paintPreview = (text) => { if (debtPreview) debtPreview.textContent = text; };
+
       if (!simplified) {
         const edges = pairwiseDebts(g);
         if (edges.length === 0) {
           settlementListEl.innerHTML = `<div style="text-align:center; padding:18px; color:var(--success); font-weight:600;">Everyone is fully settled up. No debts pending.</div>`;
           if (dashSettleDesc) dashSettleDesc.textContent = "Fully settled up";
+          paintPreview("No open debts");
           return;
         }
         if (dashSettleDesc) dashSettleDesc.textContent = `${edges.length} separate debts`;
+        paintPreview(`${edges[0].from} → ${edges[0].to}`);
         edges.forEach(d => appendSettlementRow(d, cur));
         return;
       }
@@ -3619,10 +2924,12 @@
       if (debts.length === 0) {
         settlementListEl.innerHTML = `<div style="text-align:center; padding:18px; color:var(--success); font-weight:600;">Everyone is fully settled up. No debts pending.</div>`;
         if (dashSettleDesc) dashSettleDesc.textContent = "Fully settled up";
+        paintPreview("No open debts");
         return;
       }
 
       if (dashSettleDesc) dashSettleDesc.textContent = `${debts.length} optimal debt settlements`;
+      paintPreview(`${debts[0].from} pays ${debts[0].to}`);
 
       debts.forEach(d => appendSettlementRow(d, cur));
     }
@@ -3748,42 +3055,38 @@
       if (chartArea) chartArea.style.display = "block";
 
       const entries = Object.entries(catTotals).sort((a, b) => b[1] - a[1]);
+      if (chartArea) chartArea.dataset.chart = chartType;
+      const dashAnalytics = document.getElementById("dash-analytics-desc");
+      if (dashAnalytics) dashAnalytics.textContent = entries[0] ? `${entries[0][0]} is the largest share` : "No spending yet";
 
-      if (chartType === "pie") {
-        let grad = [];
-        let curAngle = 0;
-        entries.forEach(([cat, val]) => {
-          const color = CATEGORY_COLORS[cat] || "#64748b";
-          const pct = (val / total) * 360;
-          grad.push(`${color} ${curAngle}deg ${curAngle + pct}deg`);
-          curAngle += pct;
-        });
-        if (chartVisual) {
-          chartVisual.innerHTML = `<div style="width:170px; height:170px; border-radius:50%; background: conic-gradient(${grad.join(", ")});"></div>`;
-        }
-      } else {
-        let barsHtml = `<div style="display:flex; flex-direction:column; gap:10px; width:100%; min-width:220px;">`;
+      let grad = [];
+      let curAngle = 0;
+      entries.forEach(([cat, val]) => {
+        const color = CATEGORY_COLORS[cat] || "#64748b";
+        const pct = (val / total) * 360;
+        grad.push(`${color} ${curAngle}deg ${curAngle + pct}deg`);
+        curAngle += pct;
+      });
+      if (chartVisual) {
+        chartVisual.innerHTML = `<div class="chart-donut" style="background: conic-gradient(${grad.join(", ")});"></div>`;
+      }
+
+      if (chartLegend) {
+        let barsHtml = `<div class="chart-bars">`;
         entries.forEach(([cat, val]) => {
           const color = CATEGORY_COLORS[cat] || "#64748b";
           const pct = ((val / total) * 100).toFixed(1);
           barsHtml += `
             <div>
               <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:2px;">
-                <span>${CATEGORY_ICONS[cat] || "📦"} ${cat}</span>
+                <span>${escapeHtml(cat)}</span>
                 <span>${pct}%</span>
               </div>
-              <div style="background:var(--border); border-radius:4px; height:8px; overflow:hidden;">
-                <div style="background:${color}; width:${pct}%; height:100%;"></div>
-              </div>
-            </div>
-          `;
+              <div class="bar-track"><div class="bar-fill" style="background:${color}; width:${pct}%;"></div></div>
+            </div>`;
         });
         barsHtml += `</div>`;
-        if (chartVisual) chartVisual.innerHTML = barsHtml;
-      }
-
-      if (chartLegend) {
-        chartLegend.innerHTML = "";
+        chartLegend.innerHTML = barsHtml;
         entries.forEach(([cat, val]) => {
           const color = CATEGORY_COLORS[cat] || "#64748b";
           const pct = ((val / total) * 100).toFixed(1);
@@ -3791,7 +3094,7 @@
           div.className = "legend-item";
           div.innerHTML = `
             <span class="legend-color" style="background:${color};"></span>
-            <span>${CATEGORY_ICONS[cat] || "📦"} ${cat}: <strong>${cur}${val.toFixed(2)}</strong> (${pct}%)</span>
+            <span>${escapeHtml(cat)}: <strong>${formatMoney(val, cur)}</strong> (${pct}%)</span>
           `;
           chartLegend.appendChild(div);
         });
@@ -3851,28 +3154,36 @@
         if (emptyMsgEl) emptyMsgEl.style.display = "block";
       } else {
         if (emptyMsgEl) emptyMsgEl.style.display = "none";
+        let lastDate = "";
         filtered.forEach(tx => {
+          if ((tx.date || "") !== lastDate) {
+            lastDate = tx.date || "";
+            const heading = document.createElement("div");
+            heading.className = "date-heading";
+            heading.textContent = lastDate || "Undated";
+            transactionListEl.appendChild(heading);
+          }
           const item = document.createElement("div");
           item.className = "transaction-item";
           item.onclick = () => openDetailModal(tx.id);
 
-          const icon = tx.type === "settlement" ? "🤝" : (CATEGORY_ICONS[tx.category] || "📦");
+          const letter = tx.type === "settlement" ? "S" : (tx.category || "O").slice(0, 1).toUpperCase();
 
           item.innerHTML = `
             <div style="display:flex; align-items:center; gap:12px;">
-              <div class="transaction-icon">${icon}</div>
+              <div class="cat-badge-icon">${letter}</div>
               <div>
-                <strong>${escapeHtml(tx.desc)}</strong>
+                <strong>${highlight(tx.desc, searchQuery)}</strong>
+                ${tx.receipt ? '<span class="cat-badge">Receipt</span>' : ""}
                 <span class="transaction-meta">
-                  ${escapeHtml(tx.date)} • ${escapeHtml(tx.sourceGroup || "")} • ${tx.type === "settlement" ? `${escapeHtml(tx.payer)} paid ${escapeHtml(tx.receiver)}` : `Paid by <strong>${escapeHtml(tx.payer)}</strong>`}
-                  ${tx.notes ? " • " + escapeHtml(tx.notes) : ""}
-                  ${tx.receipt ? " • Receipt" : ""}
+                  ${escapeHtml(tx.sourceGroup || "")} • ${tx.type === "settlement" ? `${highlight(tx.payer, searchQuery)} paid ${highlight(tx.receiver, searchQuery)}` : `Paid by <strong>${highlight(tx.payer, searchQuery)}</strong>`}
+                  ${tx.notes ? " • " + highlight(tx.notes, searchQuery) : ""}
                 </span>
               </div>
             </div>
             <div style="text-align:right;">
               <span class="transaction-amount">${formatMoney(tx.amount, cur)}</span>
-              <span style="font-size:0.75rem; color:var(--primary); display:block;">View details →</span>
+              <span style="font-size:0.75rem; color:var(--primary); display:block;">View details</span>
             </div>
           `;
           transactionListEl.appendChild(item);
@@ -3891,10 +3202,10 @@
             const div = document.createElement("div");
             div.className = "transaction-item";
             div.onclick = () => openDetailModal(tx.id);
-            const icon = tx.type === "settlement" ? "🤝" : (CATEGORY_ICONS[tx.category] || "📦");
+            const letter = tx.type === "settlement" ? "S" : (tx.category || "O").slice(0, 1).toUpperCase();
             div.innerHTML = `
               <div style="display:flex; align-items:center; gap:10px;">
-                <div class="transaction-icon">${icon}</div>
+                <div class="cat-badge-icon">${letter}</div>
                 <div>
                   <strong>${escapeHtml(tx.desc)}</strong>
                   <span class="transaction-meta">${escapeHtml(tx.date)} • ${escapeHtml(tx.sourceGroup || g.name)} • ${escapeHtml(tx.payer)}</span>
@@ -4081,7 +3392,7 @@
           <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; gap:8px;">
             <button type="button" class="btn btn-secondary" onclick="deleteTransaction(${tx.id})" style="color:var(--danger); border-color:#fca5a5;">Delete</button>
             <div style="display:flex; gap:8px;">
-              <button type="button" class="btn btn-secondary" onclick="startEditTransaction(${tx.id})">✏️ Edit</button>
+              <button type="button" class="btn btn-secondary" onclick="startEditTransaction(${tx.id})">Edit</button>
               <button type="button" class="btn" onclick="closeDetailModal()">Close</button>
             </div>
           </div>
@@ -4218,8 +3529,8 @@
             </span>
           </div>
           <div style="display:flex; gap:6px; align-items:center;">
-            <button type="button" class="btn btn-secondary" onclick="quickStartDirectExpense('${f.name}')" style="padding:6px 10px; font-size:0.78rem;">➕ Split Bill</button>
-            ${Math.abs(bal) >= 0.01 ? `<button type="button" class="btn btn-settle" onclick="quickStartDirectSettle('${f.name}', ${bal})" style="padding:6px 10px; font-size:0.78rem;">🤝 Settle</button>` : ''}
+            <button type="button" class="btn btn-secondary" onclick="quickStartDirectExpense('${f.name}')" style="padding:6px 10px; font-size:0.78rem;">Split bill</button>
+            ${Math.abs(bal) >= 0.01 ? `<button type="button" class="btn btn-settle" onclick="quickStartDirectSettle('${f.name}', ${bal})" style="padding:6px 10px; font-size:0.78rem;">Settle</button>` : ''}
           </div>
         `;
         container.appendChild(row);
@@ -4267,7 +3578,11 @@
         g.members.forEach((name) => {
           const chip = document.createElement("span");
           chip.className = "chip";
-          chip.textContent = name;
+          const avatar = document.createElement("span");
+          avatar.className = "avatar";
+          avatar.textContent = name.slice(0, 1).toUpperCase();
+          chip.appendChild(avatar);
+          chip.appendChild(document.createTextNode(name));
           homeMembersChips.appendChild(chip);
         });
       }
@@ -4381,12 +3696,12 @@
       if (!authBtn) return;
       if (user) {
         const firstName = (user.displayName || "User").split(" ")[0];
-        authBtn.innerHTML = `👤 ${firstName} <span style="font-size:0.7rem; opacity:0.8;">(Sign Out)</span>`;
+        authBtn.textContent = `${firstName} · Sign out`;
         if (myDisplayAccount) {
           myDisplayAccount.textContent = user.displayName ? `${user.displayName} (${user.email})` : user.email;
         }
       } else {
-        authBtn.innerHTML = `G Sign In`;
+        authBtn.textContent = "Sign in";
         if (myDisplayAccount) {
           myDisplayAccount.textContent = "Not signed in (Operating 100% offline & local)";
         }

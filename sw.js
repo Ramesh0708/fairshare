@@ -1,8 +1,9 @@
 // sw.js - Service Worker for FairShare offline caching
-const CACHE_NAME = "fairshare-v6";
+const CACHE_NAME = "fairshare-v7";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
+  "./fairshare.css",
   "./fairshare_logo.jpg",
   "./manifest.json"
 ];
