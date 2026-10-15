@@ -1,0 +1,17 @@
+{
+  "name": "FairShare - Group Expense Tracker",
+  "short_name": "FairShare",
+  "description": "Split expenses with friends, simplify debts, and track group spending offline.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0284c7",
+  "icons": [
+    {
+      "src": "./fairshare_logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
