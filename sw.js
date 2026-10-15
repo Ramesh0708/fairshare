@@ -1,5 +1,5 @@
 // sw.js - Service Worker for FairShare offline caching
-const CACHE_NAME = "fairshare-v5";
+const CACHE_NAME = "fairshare-v6";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
@@ -9,10 +9,10 @@ const ASSETS_TO_CACHE = [
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE).catch((err) => {
-        console.warn("Offline caching note:", err);
-      });
+    caches.open(CACHE_NAME).then(async (cache) => {
+      await Promise.all(ASSETS_TO_CACHE.map((url) => cache.add(url).catch((err) => {
+        console.warn("Offline caching note:", url, err);
+      })));
     })
   );
   self.skipWaiting();
