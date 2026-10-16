@@ -59,7 +59,7 @@ Shares are computed in `computeSplitShares` and must add up to the amount.
 | Percentages | The percents must add up to 100 within half a percent |
 | Shares / ratio | Each person gets `amount × their weight / sum of weights` |
 
-Group expenses are stored on the active group. 1-on-1 expenses are stored in `directTransactions` and do not change the group balance sheet. They do appear in History, Analytics, the home feed, CSV export, and the Direct 1-on-1 list.
+Group expenses are stored on the active group. 1-on-1 expenses are stored in `directTransactions` and do not change the group balance sheet. They do appear in History, Analytics, the home feed, CSV export, and the Direct 1-on-1 list. A 1-on-1 bill with a Google friend also syncs to that friend's account. A local name or mobile number does not.
 
 ## How balances work
 
@@ -84,13 +84,14 @@ Analytics sums expense amounts by category for the active group and for 1-on-1 b
 
 ## Groups, friends, and invites
 
-Everything starts in a local group called **My Group**, with the member `You`. The active group is the one selected in the sidebar. Its id is unique. The old shared id `group_default` is renamed the first time a signed-in user syncs, so two people do not accidentally write the same cloud document.
+A new account starts with no groups and no friends. The active group is the one selected in the sidebar. Its id is unique. The old shared id `group_default` is renamed the first time a signed-in user syncs, so two people do not accidentally write the same cloud document. An untouched seeded **My Group** with no expenses is removed on load.
 
-- **New group** asks for a name, a currency, and which saved friends to include. `You` is always a member.
-- **Rename** and **Delete** act on the active group. The trash control asks you to confirm. The last remaining group cannot be deleted.
-- Members can be added by name with no account. Removing a member drops them from future splits. It does not rewrite old expenses.
-- The friend roster is local. **In-app request** needs both people to be signed in. It writes a `friend_requests` document addressed to the other person's Google email. They approve or decline on Friends. **Open in Gmail** and **Share via WhatsApp** only open those apps with a prefilled message.
-- **Invite link** copies a URL shaped like `?joinGroup=<group id>&groupName=<name>&by=<your name>#friends`. Opening it shows a join dialog. Approving adds that group locally and adds you as a member. Sign in afterward if you want the expenses to sync.
+- **New group** asks for a name, a currency, and which friends to include. `You` is always a member. The last group can be deleted.
+- **Google friends** are the ones who sync. Adding one to a group writes their email onto the group. When they are signed in, FairShare loads every group whose member list contains their email, and they see the same expenses.
+- **Local friends** and **mobile numbers** stay on this device. They are labeled that way in the roster, the group picker, and the 1-on-1 split. A mobile number is shown as the name until you rename it. The web app does not read phone contacts.
+- **1-on-1 bills with a Google friend** are stored in a shared ledger for that pair of emails. Local and phone 1-on-1 bills never leave the device.
+- **In-app request** needs both people to be signed in. It writes a `friend_requests` document addressed to the other person's Google email. They approve or decline on Friends. **Open in Gmail** and **Share via WhatsApp** only open those apps with a prefilled message.
+- **Invite link** copies a URL shaped like `?joinGroup=<group id>&groupName=<name>&by=<your name>&byEmail=<email>`. Opening it shows a join dialog. Approving adds you as `You` and keeps the existing cloud expenses.
 
 Direct 1-on-1 balances are the net of bills and settlements with one saved friend, outside any group.
 
@@ -101,8 +102,8 @@ Direct 1-on-1 balances are the net of bills and settlements with one saved frien
 ```text
 theme                  light or dark
 activeGroupId
-friends[]              { id, name, email?, approved?, type? }
-directTransactions[]   1-on-1 expenses and settlements
+friends[]              { id, name, email?, phone?, approved?, type? }
+directTransactions[]   1-on-1 expenses and settlements. Google ones also store friendEmail
 groups[id]
   name, currency, members[], simplifyDebts
   transactions[]
@@ -124,8 +125,8 @@ The person using the app on this browser is the member named `You`. Signing in d
 
 Sign-in is optional. The Firebase web config lives in `index.html` for the `fairshare-app-ba160` project. When you are signed in:
 
-- The active group's name, currency, members, and transactions are written to Firestore at `groups/{groupId}`.
-- A listener applies remote changes back into this browser. That listener does not immediately write them again, which avoids an update loop.
+- Each of your groups is written to Firestore at `groups/{groupId}` with `memberEmails` and `memberLinks`. On that copy, `You` is stored as your Google name.
+- A listener loads every group whose `memberEmails` contains your email, and every 1-on-1 ledger in `direct_ledgers` whose `participants` contains your email. Applying a snapshot does not immediately write it back.
 - Friend requests are queried by your Google email.
 
 If Firebase cannot load, or the popup is blocked, the app stays fully usable offline. The domain you host on must be listed under Firebase Authentication authorized domains, or Google will refuse the popup.

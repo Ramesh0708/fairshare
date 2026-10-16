@@ -120,12 +120,12 @@
             Add an expense
           </button>
           <button type="button" class="btn btn-secondary" onclick="navigateTo('balances')">Settle up</button>
-          <button type="button" class="btn btn-secondary" onclick="shareGroupInvite()">Invite link</button>
+          <button type="button" class="btn btn-secondary" onclick="openNewGroupModal()">New group</button>
         </div>
       </div>
       <div>
         <span class="eyebrow">Active group</span>
-        <h2 style="margin:6px 0 4px;"> <span id="home-group-name">My Group</span></h2>
+        <h2 style="margin:6px 0 4px;"> <span id="home-group-name">No group yet</span></h2>
         <div id="home-group-stats" style="color:var(--muted); font-size:0.85rem;">0 expenses</div>
       </div>
     </div>
@@ -234,8 +234,8 @@
             + Type New Name
           </button>
         </div>
-        <span style="font-size:0.75rem; color:var(--muted); display:block; margin-top:4px;">
-          Split directly with this person. No group is required.
+        <span id="direct-friend-note" style="font-size:0.75rem; color:var(--muted); display:block; margin-top:4px;">
+          A Google friend sees this bill on their account. A local name or mobile number stays on this device and does not sync.
         </span>
       </div>
 
@@ -537,7 +537,7 @@
         </button>
       </div>
       <div style="margin-top:6px; font-size:0.78rem; color:var(--muted);">
-        💡 Signing in is optional. Sign in to connect seamlessly with friends via email and sync live across devices.
+        Sign in with Google before you add friends. That is how groups and 1-on-1 bills show up on their phone. A name or mobile number added below stays on this device and does not sync.
       </div>
     </div>
 
@@ -545,8 +545,8 @@
     <div class="card">
       <div class="card-header-row">
         <div>
-          <h2>Group Management</h2>
-          <span style="font-size:0.82rem; color:var(--muted);">Manage members, active group settings, and currency</span>
+          <h2>Groups</h2>
+          <span style="font-size:0.82rem; color:var(--muted);">Create a group, then add Google friends so they see the same expenses. There is no group until you create one.</span>
         </div>
       </div>
       
@@ -583,7 +583,7 @@
         </div>
 
         <div class="form-group">
-          <label for="friend-picker-select">Add from Connected / Saved Friends</label>
+          <label for="friend-picker-select">Add a friend to this group</label>
           <div style="display: flex; gap: 8px;">
             <select id="friend-picker-select">
               <option value="">-- Choose a Connected Friend --</option>
@@ -596,14 +596,14 @@
       <!-- Option 1: Direct Name Addition (No login needed) -->
       <div style="background: var(--box-bg); padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 14px;">
         <label for="input-new-member-name" style="font-size:0.85rem; font-weight:600; margin-bottom:6px; display:block;">
-          ➕ Add Any Name Directly to Group (No login needed):
+          Add a local friend to this group
         </label>
         <div style="display:flex; gap:8px;">
-          <input type="text" id="input-new-member-name" placeholder="Type any name (e.g. Aryan, Rahul, Priya, Roommate)" style="flex:1;">
-          <button type="button" id="btn-add-custom-member" class="btn btn-primary" onclick="addMemberToActiveGroup()" style="white-space:nowrap;">+ Add Member</button>
+          <input type="text" id="input-new-member-name" placeholder="Name stored only on this device" style="flex:1;">
+          <button type="button" id="btn-add-custom-member" class="btn btn-primary" onclick="addMemberToActiveGroup()" style="white-space:nowrap;">Add local friend</button>
         </div>
         <span style="font-size:0.75rem; color:var(--muted); display:block; margin-top:4px;">
-          Directly adds anyone to this group's expense calculations without requiring them to log in.
+          A local friend is saved only in this account on this device. They will not get these expenses, and the group will not sync to them. Use a Google friend above when you want them to see the split.
         </span>
       </div>
 
@@ -640,8 +640,8 @@
     <div class="card">
       <div class="card-header-row">
         <div>
-          <h2>Connect with Friends by Google Email</h2>
-          <span style="font-size:0.8rem; color:var(--muted);">Send an invitation. Once approved by your friend, you become mutual connected friends.</span>
+          <h2>Add a Google friend</h2>
+          <span style="font-size:0.8rem; color:var(--muted);">Recommended. Both of you sign in, they approve, and groups and 1-on-1 bills sync.</span>
         </div>
       </div>
 
@@ -676,17 +676,24 @@
     <div class="card">
       <div class="card-header-row">
         <div>
-          <h2>Connected Friends Roster (<span id="global-friends-count">0</span>)</h2>
-          <span style="font-size:0.8rem; color:var(--muted);">Approved Google connections & saved friends available across your groups</span>
+          <h2>Friends (<span id="global-friends-count">0</span>)</h2>
+          <span style="font-size:0.8rem; color:var(--muted);">Google friends sync. Local names and mobile numbers stay on this device.</span>
         </div>
       </div>
 
       <div style="background: var(--box-bg); padding: 14px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 14px;">
-        <label for="new-friend-name">Quick Add Friend by Name (Local):</label>
+        <label for="new-friend-name">Add a local friend by name</label>
         <div style="display:flex; gap:8px;">
-          <input type="text" id="new-friend-name" placeholder="Type friend's name (e.g. Aryan, Pooja, Vikram)" style="flex:1;">
-          <button type="button" id="btn-save-friend" class="btn btn-secondary" onclick="addNewFriendToRoster()" style="white-space:nowrap;">+ Add to Roster</button>
+          <input type="text" id="new-friend-name" placeholder="Name stored only on this device" style="flex:1;">
+          <button type="button" id="btn-save-friend" class="btn btn-secondary" onclick="addNewFriendToRoster()" style="white-space:nowrap;">Add local friend</button>
         </div>
+        <span style="font-size:0.75rem; color:var(--muted); display:block; margin-top:6px;">This person is stored only in this account on this device and will not sync to the cloud.</span>
+        <label for="new-friend-phone" style="margin-top:12px;">Add a friend by mobile number</label>
+        <div style="display:flex; gap:8px;">
+          <input type="tel" id="new-friend-phone" placeholder="Mobile number, you can rename it later" style="flex:1;">
+          <button type="button" class="btn btn-secondary" onclick="addFriendByPhone()" style="white-space:nowrap;">Add number</button>
+        </div>
+        <span style="font-size:0.75rem; color:var(--muted); display:block; margin-top:6px;">The number is the name until you rename it. It stays on this device and does not sync. The web app does not read your phone contacts.</span>
       </div>
 
       <label style="font-size:0.82rem; font-weight:600; color:var(--muted);">Friends List:</label>
@@ -772,7 +779,7 @@
       <button type="button" class="modal-close" onclick="closeNewGroupModal()">&times;</button>
       <h3 style="margin-top:0; font-size:1.25rem;">Create a New Group</h3>
       <p style="font-size:0.85rem; color:var(--muted); margin-top:-4px; margin-bottom:16px;">
-        Name your group and simply check off friends to include them. No group codes required!
+        Start with you. Tick Google friends if they should see this group on their account. A local friend or mobile number stays on this device and does not sync.
       </p>
 
       <form id="new-group-form">
@@ -793,7 +800,7 @@
         </div>
 
         <div class="form-group">
-          <label>Select Friends to Add to this Group:</label>
+          <label>Friends in this group</label>
           <div id="modal-friends-checkboxes" style="background:var(--box-bg); padding:10px 14px; border-radius:8px; border:1px solid var(--border); max-height:160px; overflow-y:auto;"></div>
         </div>
 
@@ -825,22 +832,10 @@
     // --- Application State ---
     let appState = {
       theme: "light",
-      activeGroupId: "group_default",
-      friends: [
-        { id: "f1", name: "Aryan" },
-        { id: "f2", name: "Rahul" }
-      ],
+      activeGroupId: "",
+      friends: [],
       directTransactions: [],
-      groups: {
-        "group_default": {
-          id: "group_default",
-          name: "My Group",
-          currency: "₹",
-          members: ["You", "Aryan"],
-          simplifyDebts: true,
-          transactions: []
-        }
-      }
+      groups: {}
     };
 
     let activeReceiptBase64 = null;
@@ -930,10 +925,16 @@
     };
 
     function getGroup() {
-      if (!appState.groups[appState.activeGroupId]) {
-        appState.activeGroupId = Object.keys(appState.groups)[0];
+      const ids = Object.keys(appState.groups);
+      if (!ids.length) {
+        return { id: "", name: "No group yet", currency: "₹", members: ["You"], simplifyDebts: true, transactions: [], virtual: true };
       }
+      if (!appState.groups[appState.activeGroupId]) appState.activeGroupId = ids[0];
       return appState.groups[appState.activeGroupId];
+    }
+
+    function hasGroups() {
+      return Object.keys(appState.groups).length > 0;
     }
 
     function highlight(text, query) {
@@ -1058,6 +1059,7 @@
           if (parsed.directTransactions && Array.isArray(parsed.directTransactions)) appState.directTransactions = parsed.directTransactions;
           if (parsed.groups && Object.keys(parsed.groups).length > 0) appState.groups = parsed.groups;
           if (parsed.activeGroupId && appState.groups[parsed.activeGroupId]) appState.activeGroupId = parsed.activeGroupId;
+          dropUntouchedDemo();
         } catch (e) {
           console.error("Could not parse saved state:", e);
         }
@@ -1068,21 +1070,28 @@
       }
     }
 
-    function saveState() {
+    function dropUntouchedDemo() {
+      Object.keys(appState.groups).forEach((id) => {
+        const g = appState.groups[id];
+        const members = g.members || [];
+        const onlySeed = members.length > 0 && members.every((m) => m === "You" || m === "Aryan");
+        const empty = !(g.transactions || []).length;
+        if (g.name === "My Group" && empty && onlySeed) delete appState.groups[id];
+      });
+      const remaining = Object.keys(appState.groups);
+      const noActivity = remaining.every((id) => !(appState.groups[id].transactions || []).length) && !(appState.directTransactions || []).length;
+      const seedFriendsOnly = appState.friends.length > 0 && appState.friends.every((f) => !f.email && !f.phone && (f.name === "Aryan" || f.name === "Rahul"));
+      if (noActivity && seedFriendsOnly && remaining.length === 0) appState.friends = [];
+      if (!appState.groups[appState.activeGroupId]) appState.activeGroupId = remaining[0] || Object.keys(appState.groups)[0] || "";
+    }
+
+    function persistLocal() {
       localStorage.setItem("fairshare_state_v9", JSON.stringify(appState));
-      // Cloud sync if signed in
-      if (typeof db !== "undefined" && db && typeof currentUser !== "undefined" && currentUser) {
-        const g = getGroup();
-        db.collection("groups").doc(g.id).set({
-          id: g.id,
-          name: g.name,
-          currency: g.currency,
-          members: g.members,
-          transactions: g.transactions,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-          updatedBy: currentUser.email
-        }, { merge: true }).catch((err) => console.warn("Cloud sync note:", err));
-      }
+    }
+
+    function saveState() {
+      persistLocal();
+      if (typeof pushCloudState === "function") pushCloudState();
     }
 
     // --- DOM Elements ---
@@ -1235,28 +1244,40 @@
     let unsubOutgoingRequests = null;
 
     // 1. Direct Name Addition (No login needed)
+    function confirmDeviceOnlyFriend(name) {
+      return confirm(`"${name}" stays only on this device.\n\nThey will not see these expenses, and nothing about them syncs to the cloud. Google friends are the ones who can see shared groups and 1-on-1 bills.\n\nAdd them on this device anyway?`);
+    }
+
     window.addMemberToActiveGroup = function(customName) {
       const g = getGroup();
+      if (!g || g.virtual) {
+        alert("Create a group first. Use New group on the Friends page.");
+        if (typeof openNewGroupModal === "function") openNewGroupModal();
+        return;
+      }
       const inputEl = document.getElementById("input-new-member-name");
       const name = (customName || (inputEl ? inputEl.value : "")).trim();
       if (!name) {
-        alert("Please enter a name (e.g. Aryan, Rahul, Roommate).");
+        alert("Choose a Google friend, or enter a name for someone who stays on this device.");
         return;
       }
       if (g.members.some(m => m.toLowerCase() === name.toLowerCase())) {
         alert(`"${name}" is already in this group!`);
         return;
       }
+      const existing = friendByName(name);
+      if (!existing || friendKind(existing) !== "google") {
+        if (!confirmDeviceOnlyFriend(name)) return;
+      }
       g.members.push(name);
 
-      // Save to friends roster if not already there
       if (!appState.friends.some(f => f.name.toLowerCase() === name.toLowerCase())) {
         appState.friends.push({ id: "f_" + Date.now(), name: name, type: "custom" });
       }
 
       saveState();
       renderAll();
-      if (inputEl) inputEl.value = "";
+      if (inputEl && !customName) inputEl.value = "";
     };
 
     if (inputNewMemberName) {
@@ -1292,18 +1313,78 @@
       const inputEl = document.getElementById("new-friend-name");
       const name = (inputEl ? inputEl.value : "").trim();
       if (!name) {
-        alert("Please enter a friend name.");
+        alert("Enter a name for a friend who stays on this device.");
         return;
       }
-      if (appState.friends.some(f => f.name.toLowerCase() === name.toLowerCase())) {
+      if (appState.friends.some(f => f.name.toLowerCase() === name.toLowerCase() || f.phone === name)) {
         alert(`"${name}" is already in your friends roster!`);
         return;
       }
+      if (!confirmDeviceOnlyFriend(name)) return;
       appState.friends.push({ id: "f_" + Date.now(), name: name, type: "custom" });
       saveState();
       renderFriendsRoster();
       renderFriendPickerDropdown();
       if (inputEl) inputEl.value = "";
+    };
+
+    window.addFriendByPhone = function() {
+      const inputEl = document.getElementById("new-friend-phone");
+      const raw = (inputEl ? inputEl.value : "").trim();
+      const phone = raw.replace(/[^\d+]/g, "");
+      const digits = phone.replace(/\D/g, "");
+      if (digits.length < 8 || digits.length > 15) {
+        alert("Enter a mobile number with 8 to 15 digits.");
+        return;
+      }
+      if (appState.friends.some(f => f.phone === phone || (f.phone && f.phone.replace(/\D/g, "") === digits))) {
+        alert("That mobile number is already in your friends list.");
+        return;
+      }
+      if (!confirmDeviceOnlyFriend(phone)) return;
+      appState.friends.push({ id: "f_" + Date.now(), name: phone, phone: phone, type: "phone" });
+      saveState();
+      renderFriendsRoster();
+      renderFriendPickerDropdown();
+      if (inputEl) inputEl.value = "";
+    };
+
+    function rewritePerson(tx, oldName, newName) {
+      if (!tx) return;
+      if (tx.friend === oldName) tx.friend = newName;
+      if (tx.payer === oldName) tx.payer = newName;
+      if (tx.receiver === oldName) tx.receiver = newName;
+      if (tx.shares && Object.prototype.hasOwnProperty.call(tx.shares, oldName)) {
+        tx.shares[newName] = tx.shares[oldName];
+        delete tx.shares[oldName];
+      }
+      if (typeof tx.desc === "string") tx.desc = tx.desc.split(oldName).join(newName);
+    }
+
+    window.renameFriend = function(id) {
+      const friend = appState.friends.find((f) => f.id === id);
+      if (!friend) return;
+      const next = prompt(friend.phone ? `Name to show for ${friend.phone}` : `Rename ${friend.name}`, friend.name);
+      if (!next || !next.trim() || next.trim() === friend.name) return;
+      const name = next.trim();
+      if (name.toLowerCase() === "you") {
+        alert("You is reserved for the person using this device.");
+        return;
+      }
+      if (appState.friends.some((f) => f.id !== friend.id && f.name.toLowerCase() === name.toLowerCase())) {
+        alert(`"${name}" is already in your friends list.`);
+        return;
+      }
+      const oldName = friend.name;
+      friend.name = name;
+      Object.values(appState.groups).forEach((g) => {
+        g.members = (g.members || []).map((m) => m === oldName ? name : m);
+        (g.transactions || []).forEach((t) => rewritePerson(t, oldName, name));
+        (g.memberLinks || []).forEach((link) => { if (link.name === oldName) link.name = name; });
+      });
+      (appState.directTransactions || []).forEach((t) => rewritePerson(t, oldName, name));
+      saveState();
+      renderAll();
     };
 
     window.deleteFriendFromRoster = function(id) {
@@ -1513,7 +1594,8 @@
     };
 
     function addApprovedFriend(email, name) {
-      const em = email.toLowerCase().trim();
+      const em = (email || "").toLowerCase().trim();
+      if (!em || em.indexOf("@") === -1) return;
       const nm = name || em.split("@")[0];
       if (!appState.friends.some(f => f.email && f.email.toLowerCase() === em)) {
         appState.friends.push({
@@ -1626,23 +1708,29 @@
 
       friendsListContainer.innerHTML = "";
       if (appState.friends.length === 0) {
-        friendsListContainer.innerHTML = `<div style="text-align:center; color:var(--muted); padding:16px;">No saved or connected friends yet. Add a name or send an email request above!</div>`;
+        friendsListContainer.innerHTML = `<div style="text-align:center; color:var(--muted); padding:16px;">No friends yet. Add them with their Google email so expenses sync. A name or mobile number stays on this device only.</div>`;
         return;
       }
-      appState.friends.forEach(f => {
+      const ordered = appState.friends.slice().sort((a, b) => {
+        const rank = (f) => friendKind(f) === "google" ? 0 : 1;
+        return rank(a) - rank(b) || a.name.localeCompare(b.name);
+      });
+      ordered.forEach(f => {
         const div = document.createElement("div");
         div.className = "friend-row";
-        const isApproved = f.approved || f.email;
+        const kind = friendKind(f);
         const cur = getGroup().currency;
         // Compute 1-on-1 balance with this friend
         let friendBal = 0;
         (appState.directTransactions || []).forEach(t => {
-          if (t.type === "expense" && t.friend === f.name) {
+          const sameFriend = (f.email && t.friendEmail && t.friendEmail.toLowerCase() === f.email.toLowerCase()) || (f.phone && t.friendPhone === f.phone) || t.friend === f.name;
+          if (!sameFriend) return;
+          if (t.type === "expense") {
             const myShare = (t.shares && t.shares["You"]) || 0;
             const theirShare = (t.shares && t.shares[f.name]) || 0;
             if (t.payer === "You") friendBal += theirShare;
             else if (t.payer === f.name) friendBal -= myShare;
-          } else if (t.type === "settlement" && t.friend === f.name) {
+          } else if (t.type === "settlement") {
             if (t.payer === f.name && t.receiver === "You") friendBal -= t.amount;
             else if (t.payer === "You" && t.receiver === f.name) friendBal += t.amount;
           }
@@ -1659,16 +1747,17 @@
 
         div.innerHTML = `
           <div>
-            <strong>${f.name}</strong>
-            ${isApproved ? '<span class="approved-pill">✓ Approved</span>' : '<span style="font-size:0.7rem; background:var(--border); padding:2px 6px; border-radius:4px; margin-left:6px; color:var(--muted);">Local</span>'}
+            <strong>${escapeHtml(f.name)}</strong>
+            ${kind === "google" ? '<span class="approved-pill">Google · syncs</span>' : kind === "phone" ? '<span style="font-size:0.7rem; background:#fef3c7; padding:2px 6px; border-radius:4px; margin-left:6px; color:#92400e;">Phone · this device only</span>' : '<span style="font-size:0.7rem; background:var(--border); padding:2px 6px; border-radius:4px; margin-left:6px; color:var(--muted);">Local · this device only</span>'}
             ${balBadge}
             <span style="font-size:0.75rem; color:var(--muted); display:block; margin-top:2px;">
-              ${f.email ? f.email : 'Saved name'}
+              ${kind === "google" ? escapeHtml(f.email) : kind === "phone" ? escapeHtml(f.phone) + " · does not sync" : "Saved on this device · does not sync"}
             </span>
           </div>
           <div style="display:flex; gap:6px; align-items:center;">
-            <button type="button" class="btn btn-secondary" onclick="quickStartDirectExpense('${f.name}')" style="padding:4px 8px; font-size:0.75rem;">Split</button>
-            ${Math.abs(friendBal) > 0.01 ? `<button type="button" class="btn btn-settle" onclick="quickStartDirectSettle('${f.name}', ${friendBal})" style="padding:4px 8px; font-size:0.75rem;">Settle</button>` : ''}
+            <button type="button" class="btn btn-secondary" onclick="renameFriend('${f.id}')" style="padding:4px 8px; font-size:0.75rem;">Rename</button>
+            <button type="button" class="btn btn-secondary" onclick="quickStartDirectExpense('${f.id}')" style="padding:4px 8px; font-size:0.75rem;">Split</button>
+            ${Math.abs(friendBal) > 0.01 ? `<button type="button" class="btn btn-settle" onclick="quickStartDirectSettle('${f.id}', ${friendBal})" style="padding:4px 8px; font-size:0.75rem;">Settle</button>` : ''}
             <button type="button" class="btn-delete" onclick="deleteFriendFromRoster('${f.id}')" title="Remove friend">&times;</button>
           </div>
         `;
@@ -1679,19 +1768,33 @@
     function renderFriendPickerDropdown() {
       const g = getGroup();
       if (!friendPickerSelect) return;
-      friendPickerSelect.innerHTML = `<option value="">-- Choose a Connected Friend --</option>`;
-      const availableFriends = appState.friends.filter(f => !g.members.includes(f.name));
-      availableFriends.forEach(f => {
-        const opt = document.createElement("option");
-        opt.value = f.name;
-        opt.textContent = `${f.name}${f.email ? ' (' + f.email + ')' : ''}`;
-        friendPickerSelect.appendChild(opt);
-      });
-      if (availableFriends.length === 0) {
+      friendPickerSelect.innerHTML = "";
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.textContent = appState.friends.length ? "Choose a friend" : "No friends yet";
+      friendPickerSelect.appendChild(placeholder);
+      const available = appState.friends.filter(f => !(g.members || []).includes(f.name));
+      const google = available.filter(f => friendKind(f) === "google");
+      const device = available.filter(f => friendKind(f) !== "google");
+      const addGroup = (label, list) => {
+        if (!list.length) return;
+        const group = document.createElement("optgroup");
+        group.label = label;
+        list.forEach((f) => {
+          const opt = document.createElement("option");
+          opt.value = f.name;
+          opt.textContent = friendKind(f) === "google" ? `${f.name} · syncs` : `${f.name} · this device only`;
+          group.appendChild(opt);
+        });
+        friendPickerSelect.appendChild(group);
+      };
+      addGroup("Google friends — they can see this group", google);
+      addGroup("On this device only — does not sync", device);
+      if (!available.length) {
         const opt = document.createElement("option");
         opt.value = "";
         opt.disabled = true;
-        opt.textContent = appState.friends.length === 0 ? "(No friends in roster yet — add above)" : "(All friends already in this group)";
+        opt.textContent = appState.friends.length === 0 ? "Add a Google friend, or a local name below" : "Everyone in this list is already in the group";
         friendPickerSelect.appendChild(opt);
       }
     }
@@ -1700,7 +1803,13 @@
       btnAddFriendToGroup.addEventListener("click", () => {
         const selectedName = friendPickerSelect.value;
         if (!selectedName) {
-          alert("Please select a friend from the dropdown or type a name above.");
+          if (!appState.friends.length) {
+            alert("No friends yet. Add a Google friend so the group syncs, or add a local friend. A local friend stays on this device and does not sync.");
+            const localName = document.getElementById("input-new-member-name");
+            if (localName) localName.focus();
+          } else {
+            alert("Choose a friend from the list. Google friends sync. Anyone added by name stays on this device only.");
+          }
           return;
         }
         addMemberToActiveGroup(selectedName);
@@ -1712,6 +1821,12 @@
       if (!groupSelector) return;
       groupSelector.innerHTML = "";
       const g = getGroup();
+      if (!hasGroups()) {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "No groups yet";
+        groupSelector.appendChild(opt);
+      }
       Object.values(appState.groups).forEach(grp => {
         const opt = document.createElement("option");
         opt.value = grp.id;
@@ -1746,51 +1861,71 @@
 
     if (btnDeleteGroup) {
       btnDeleteGroup.addEventListener("click", () => {
-        if (Object.keys(appState.groups).length <= 1) {
-          alert("You must have at least one group.");
-          return;
-        }
         const g = getGroup();
+        if (!g || g.virtual) return;
         const rareDelete = btnDeleteGroup.closest("[data-slot='delete-button']");
         if (rareDelete) {
           rareDelete.classList.remove("is-open");
           const panel = rareDelete.querySelector(".rare-delete-panel");
           if (panel) panel.hidden = true;
         }
+        if (db && currentUser && g.id) {
+          const email = signedInEmail();
+          const removedId = g.id;
+          db.collection("groups").doc(removedId).get().then((doc) => {
+            if (!doc.exists) return;
+            const data = doc.data();
+            const emails = (data.memberEmails || []).filter((e) => e !== email);
+            if (!emails.length) {
+              db.collection("groups").doc(removedId).delete().catch(() => {});
+              return;
+            }
+            const myLink = (data.memberLinks || []).find((l) => (l.email || "").toLowerCase() === email);
+            db.collection("groups").doc(removedId).set({
+              memberEmails: emails,
+              memberLinks: (data.memberLinks || []).filter((l) => (l.email || "").toLowerCase() !== email),
+              members: (data.members || []).filter((m) => !myLink || m !== myLink.name)
+            }, { merge: true }).catch(() => {});
+          }).catch(() => {});
+        }
         delete appState.groups[g.id];
-        appState.activeGroupId = Object.keys(appState.groups)[0];
+        appState.activeGroupId = Object.keys(appState.groups)[0] || "";
         saveState();
         renderAll();
       });
     }
 
     // New Group Modal
-    if (btnNewGroupModal) {
-      btnNewGroupModal.addEventListener("click", () => {
+    window.openNewGroupModal = function() {
         if (modalGroupName) modalGroupName.value = "";
         if (modalFriendsCheckboxes) {
           modalFriendsCheckboxes.innerHTML = "";
           if (appState.friends.length === 0) {
-            modalFriendsCheckboxes.innerHTML = `<span style="font-size:0.8rem; color:var(--muted);">No saved friends yet.</span>`;
+            modalFriendsCheckboxes.innerHTML = `<span style="font-size:0.8rem; color:var(--muted);">No friends yet. Create the group with just you, then add a Google friend so it syncs. A local friend stays on this device and will not sync.</span>`;
           } else {
-            appState.friends.forEach(f => {
+            const ordered = appState.friends.slice().sort((a, b) => (friendKind(a) === "google" ? 0 : 1) - (friendKind(b) === "google" ? 0 : 1));
+            ordered.forEach(f => {
               const row = document.createElement("div");
-              row.style.display = "flex";
-              row.style.alignItems = "center";
-              row.style.gap = "8px";
               row.style.padding = "4px 0";
-              row.innerHTML = `
-                <label style="margin-bottom:0; font-weight:500; cursor:pointer; display:flex; align-items:center; gap:8px;">
-                  <input type="checkbox" class="modal-friend-check" value="${f.name}"> ${f.name}
-                </label>
-              `;
+              const label = document.createElement("label");
+              label.style.cssText = "margin-bottom:0; font-weight:500; cursor:pointer; display:flex; align-items:center; gap:8px;";
+              const box = document.createElement("input");
+              box.type = "checkbox";
+              box.className = "modal-friend-check";
+              box.value = f.name;
+              label.appendChild(box);
+              label.appendChild(document.createTextNode(friendKind(f) === "google" ? `${f.name} · syncs` : `${f.name} · this device only`));
+              row.appendChild(label);
               modalFriendsCheckboxes.appendChild(row);
             });
           }
         }
         if (newGroupModal) newGroupModal.classList.add("active");
-      });
-    }
+    };
+    if (btnNewGroupModal) btnNewGroupModal.addEventListener("click", openNewGroupModal);
+    window.closeNewGroupModal = function() {
+      if (newGroupModal) newGroupModal.classList.remove("active");
+    };
 
     if (btnCloseGroupModal) {
       btnCloseGroupModal.addEventListener("click", () => {
@@ -1805,6 +1940,11 @@
         if (!name) return;
         const cur = modalGroupCurrency.value;
         const selectedFriends = Array.from(document.querySelectorAll(".modal-friend-check:checked")).map(cb => cb.value);
+        const deviceOnly = selectedFriends.filter((name) => {
+          const friend = friendByName(name);
+          return !friend || friendKind(friend) !== "google";
+        });
+        if (deviceOnly.length && !confirm(`${deviceOnly.join(", ")} ${deviceOnly.length === 1 ? "is" : "are"} only on this device and will not see this group or sync.\n\nCreate the group with them anyway?`)) return;
 
         const newId = "group_" + Date.now();
         const members = ["You", ...selectedFriends];
@@ -1830,6 +1970,10 @@
     if (currencySelect) {
       currencySelect.addEventListener("change", (e) => {
         const g = getGroup();
+        if (g.virtual) {
+          alert("Create a group before choosing a currency.");
+          return;
+        }
         const previous = g.currency;
         let next = e.target.value;
         if (e.target.value === "custom") {
@@ -1889,10 +2033,11 @@
         return;
       }
 
-      appState.friends.forEach((f, idx) => {
+      const orderedFriends = appState.friends.slice().sort((a, b) => (friendKind(a) === "google" ? 0 : 1) - (friendKind(b) === "google" ? 0 : 1));
+      orderedFriends.forEach((f, idx) => {
         const opt = document.createElement("option");
         opt.value = f.name;
-        opt.textContent = `${f.name}${f.email ? ' (' + f.email + ')' : ''}`;
+        opt.textContent = friendKind(f) === "google" ? `${f.name} · syncs` : `${f.name} · this device only`;
         if (selectedDirectFriend ? f.name === selectedDirectFriend : idx === 0) {
           opt.selected = true;
           selectedDirectFriend = f.name;
@@ -1920,13 +2065,24 @@
         }
       }
 
+      const note = document.getElementById("direct-friend-note");
+      const selected = friendByName(selectedDirectFriend);
+      if (note) {
+        note.textContent = selected && friendKind(selected) === "google"
+          ? `${selected.name} is a Google friend. This bill syncs to their FairShare account.`
+          : selected
+            ? `${selected.name} is only on this device. This bill will not sync to the cloud.`
+            : "A Google friend sees this bill on their account. A local name or mobile number stays on this device and does not sync.";
+      }
+
       renderSplitBreakdown();
     };
 
     window.promptQuickFriendForExpense = function() {
       const name = prompt("Enter friend's name to split with:");
-      if (!name || !name.trim()) return;
+        if (!name || !name.trim()) return;
       const cleanName = name.trim();
+      if (!appState.friends.some(f => f.name.toLowerCase() === cleanName.toLowerCase()) && !confirmDeviceOnlyFriend(cleanName)) return;
       if (!appState.friends.some(f => f.name.toLowerCase() === cleanName.toLowerCase())) {
         appState.friends.push({ id: "f_" + Date.now(), name: cleanName, type: "custom" });
         saveState();
@@ -1938,7 +2094,13 @@
       handleDirectFriendChange();
     };
 
-    window.quickStartDirectExpense = function(friendName) {
+    function friendNameFrom(friendNameOrId) {
+      const friend = appState.friends.find((f) => f.id === friendNameOrId) || friendByName(friendNameOrId);
+      return friend ? friend.name : friendNameOrId;
+    }
+
+    window.quickStartDirectExpense = function(friendNameOrId) {
+      const friendName = friendNameFrom(friendNameOrId);
       navigateTo("add-expense");
       selectedDirectFriend = friendName;
       setExpenseScope("friend");
@@ -1947,7 +2109,8 @@
       handleDirectFriendChange();
     };
 
-    window.quickStartDirectSettle = function(friendName, currentBal) {
+    window.quickStartDirectSettle = function(friendNameOrId, currentBal) {
+      const friendName = friendNameFrom(friendNameOrId);
       const cur = getGroup().currency;
       const absBal = Math.abs(currentBal);
       const isOwedToMe = currentBal > 0;
@@ -1966,6 +2129,8 @@
           type: "settlement",
           scope: "direct",
           friend: friendName,
+          friendEmail: friendByName(friendName) && friendByName(friendName).email ? friendByName(friendName).email : null,
+          friendPhone: friendByName(friendName) && friendByName(friendName).phone ? friendByName(friendName).phone : null,
           desc: `${payer} paid ${receiver} (1-on-1 Settlement)`,
           payer: payer,
           receiver: receiver,
@@ -2465,6 +2630,11 @@
     }
 
     window.loadSampleDemoData = function() {
+      if (!hasGroups()) {
+        const id = "group_" + Date.now();
+        appState.groups[id] = { id, name: "Sample group", currency: "₹", members: ["You"], simplifyDebts: true, transactions: [] };
+        appState.activeGroupId = id;
+      }
       const g = getGroup();
       if (g.transactions.length && !confirm("Replace this group's expenses with sample demo data?")) return;
       const people = g.members.length ? g.members.slice() : ["You"];
@@ -2556,6 +2726,10 @@
           showExpenseError("Choose the friend you are splitting this bill with.");
           return;
         }
+        if (currentExpenseScope !== "friend" && (!g || g.virtual)) {
+          showExpenseError("Create a group before adding a group expense. Friends → New group.");
+          return;
+        }
 
         const shares = computeSplitShares(amount);
         if (!shares) {
@@ -2582,6 +2756,9 @@
             tx.notes = notes;
             tx.scope = currentExpenseScope;
             tx.friend = currentExpenseScope === "friend" ? selectedDirectFriend : null;
+            const editedFriend = friendByName(selectedDirectFriend);
+            tx.friendEmail = currentExpenseScope === "friend" && editedFriend && editedFriend.email ? editedFriend.email : null;
+            tx.friendPhone = currentExpenseScope === "friend" && editedFriend && editedFriend.phone ? editedFriend.phone : null;
             if (activeReceiptBase64) tx.receipt = activeReceiptBase64;
 
             const targetIsDirect = currentExpenseScope === "friend";
@@ -2601,6 +2778,8 @@
             type: "expense",
             scope: currentExpenseScope,
             friend: currentExpenseScope === "friend" ? selectedDirectFriend : null,
+            friendEmail: currentExpenseScope === "friend" && friendByName(selectedDirectFriend) && friendByName(selectedDirectFriend).email ? friendByName(selectedDirectFriend).email : null,
+            friendPhone: currentExpenseScope === "friend" && friendByName(selectedDirectFriend) && friendByName(selectedDirectFriend).phone ? friendByName(selectedDirectFriend).phone : null,
             desc: desc,
             amount: amount,
             payer: payer,
@@ -2763,6 +2942,10 @@
         const receiver = settleReceiver.value;
         const amount = parseFloat(settleAmount.value);
 
+        if (!g || g.virtual) {
+          alert("Create a group before recording a group settlement.");
+          return;
+        }
         if (!payer || !receiver || isNaN(amount) || amount <= 0) {
           alert("Please specify valid settlement details.");
           return;
@@ -2843,7 +3026,11 @@
       const myName = "You";
       const myBal = balances[myName] !== undefined ? balances[myName] : 0;
       if (homeStandingText) {
-        if (Math.abs(myBal) < 0.01) {
+        if (!hasGroups()) {
+          homeStandingText.textContent = "Create a group to start splitting";
+          homeStandingText.style.color = "var(--text)";
+          if (homeStandingSub) homeStandingSub.textContent = "You have no groups yet. Add a Google friend so they can see the expenses.";
+        } else if (Math.abs(myBal) < 0.01) {
           homeStandingText.textContent = "You are all settled up!";
           homeStandingText.style.color = "var(--text)";
           if (homeStandingSub) homeStandingSub.textContent = "No outstanding debts in this group";
@@ -3604,6 +3791,8 @@
           chip.className = "chip";
           const label = document.createElement("span");
           label.textContent = name;
+          const friend = name === "You" ? null : friendByName(name);
+          chip.title = name === "You" ? "You on this device" : friend && friendKind(friend) === "google" ? "Google friend · syncs" : "On this device only · does not sync";
           chip.appendChild(label);
 
           const removeButton = document.createElement("button");
@@ -3716,6 +3905,12 @@
     };
 
     let db = null;
+    let suppressCloudWrite = false;
+    let unsubSharedGroups = null;
+    let unsubDirectLedgers = null;
+    const lastCloudGroupTxIds = {};
+    const lastCloudSeenGroups = {};
+    const lastCloudDirectIds = {};
     let auth = null;
     let currentUser = null;
     let unsubscribeGroupListener = null;
@@ -3780,6 +3975,295 @@
       }
     };
 
+    function signedInEmail() {
+      return currentUser && currentUser.email ? currentUser.email.toLowerCase().trim() : "";
+    }
+
+    function signedInName() {
+      if (!currentUser) return "You";
+      return (currentUser.displayName || currentUser.email.split("@")[0] || "You").trim();
+    }
+
+    function friendKind(f) {
+      if (!f) return "local";
+      if (f.type === "phone" || f.phone) return "phone";
+      if (f.type === "google" || f.approved || f.email) return "google";
+      return "local";
+    }
+
+    function friendByName(name) {
+      const matches = appState.friends.filter((f) => f.name.toLowerCase() === String(name || "").toLowerCase());
+      return matches.find((f) => friendKind(f) === "google") || matches[0];
+    }
+
+    function pairDocId(a, b) {
+      return "pair_" + [a, b].map((e) => String(e).toLowerCase().trim()).sort().join("__").replace(/[^a-z0-9_@.]/g, "");
+    }
+
+    function mapNameOut(name, selfName) {
+      return name === "You" ? selfName : name;
+    }
+
+    function cloudifyGroup(g) {
+      const selfName = signedInName();
+      const links = [];
+      const email = signedInEmail();
+      if (email) links.push({ email, name: selfName });
+      (g.memberLinks || []).forEach((link) => {
+        if (link && link.email && link.email.toLowerCase() !== email) links.push({ email: link.email.toLowerCase(), name: link.name });
+      });
+      (g.members || []).forEach((name) => {
+        if (name === "You") return;
+        const friend = friendByName(name);
+        if (friend && friendKind(friend) === "google" && friend.email) {
+          links.push({ email: friend.email.toLowerCase(), name: friend.name });
+        }
+      });
+      const memberLinks = [];
+      const seen = new Set();
+      links.forEach((link) => {
+        const key = link.email.toLowerCase();
+        if (seen.has(key)) return;
+        seen.add(key);
+        memberLinks.push({ email: key, name: link.name || key.split("@")[0] });
+      });
+      const map = (name) => mapNameOut(name, selfName);
+      const mapShares = (shares) => shares ? Object.fromEntries(Object.entries(shares).map(([k, v]) => [map(k), v])) : shares;
+      return {
+        id: g.id,
+        name: g.name,
+        currency: g.currency,
+        members: (g.members || []).map(map),
+        memberEmails: memberLinks.map((l) => l.email),
+        memberLinks,
+        simplifyDebts: g.simplifyDebts !== false,
+        transactions: (g.transactions || []).map((t) => ({
+          ...t,
+          payer: map(t.payer),
+          receiver: t.receiver ? map(t.receiver) : t.receiver,
+          shares: mapShares(t.shares)
+        }))
+      };
+    }
+
+    function localizeGroup(data) {
+      const email = signedInEmail();
+      const link = (data.memberLinks || []).find((l) => (l.email || "").toLowerCase() === email);
+      const cloudMe = link ? link.name : "";
+      const map = (name) => (cloudMe && name === cloudMe) ? "You" : name;
+      const mapShares = (shares) => shares ? Object.fromEntries(Object.entries(shares).map(([k, v]) => [map(k), v])) : shares;
+      const members = (data.members || []).map(map);
+      if (email && !members.includes("You")) members.unshift("You");
+      return {
+        id: data.id,
+        name: data.name || "Shared group",
+        currency: data.currency || "₹",
+        members: [...new Set(members)],
+        memberLinks: data.memberLinks || [],
+        simplifyDebts: data.simplifyDebts !== false,
+        transactions: (data.transactions || []).map((t) => ({
+          ...t,
+          payer: map(t.payer),
+          receiver: t.receiver ? map(t.receiver) : t.receiver,
+          shares: mapShares(t.shares)
+        }))
+      };
+    }
+
+    function googleFriendForTx(tx) {
+      if (tx.friendEmail) {
+        return appState.friends.find((f) => f.email && f.email.toLowerCase() === String(tx.friendEmail).toLowerCase() && friendKind(f) === "google");
+      }
+      const friend = friendByName(tx.friend);
+      return friend && friendKind(friend) === "google" && friend.email ? friend : null;
+    }
+
+    function cloudifyDirect(tx, friend) {
+      const me = signedInEmail();
+      const them = friend.email.toLowerCase();
+      const mapKey = (key) => key === "You" ? me : (key === friend.name ? them : key);
+      const copy = { ...tx };
+      delete copy.receipt;
+      return {
+        ...copy,
+        friendEmail: them,
+        payerEmail: tx.payer === "You" ? me : them,
+        receiverEmail: tx.receiver ? (tx.receiver === "You" ? me : them) : null,
+        sharesByEmail: tx.shares ? Object.fromEntries(Object.entries(tx.shares).map(([k, v]) => [mapKey(k), v])) : null
+      };
+    }
+
+    function localizeDirect(tx, friend) {
+      const me = signedInEmail();
+      const them = friend.email.toLowerCase();
+      const mapKey = (key) => key === me ? "You" : (key === them ? friend.name : key);
+      const shares = tx.sharesByEmail
+        ? Object.fromEntries(Object.entries(tx.sharesByEmail).map(([k, v]) => [mapKey(k), v]))
+        : tx.shares;
+      return {
+        ...tx,
+        friend: friend.name,
+        friendEmail: them,
+        payer: tx.payerEmail === me ? "You" : friend.name,
+        receiver: tx.receiverEmail ? (tx.receiverEmail === me ? "You" : friend.name) : (tx.receiver || null),
+        shares
+      };
+    }
+
+    function ensureGoogleFriend(email, name) {
+      const em = (email || "").toLowerCase().trim();
+      if (!em || em === signedInEmail()) return;
+      const existing = appState.friends.find((f) => f.email && f.email.toLowerCase() === em);
+      if (existing) return;
+      appState.friends.push({
+        id: "f_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+        name: name || em.split("@")[0],
+        email: em,
+        approved: true,
+        type: "google"
+      });
+    }
+
+    function mergeById(existing, local, previouslySeen) {
+      const map = new Map();
+      (existing || []).forEach((tx) => map.set(String(tx.id), tx));
+      const localIds = new Set((local || []).map((tx) => String(tx.id)));
+      (previouslySeen || []).forEach((id) => {
+        if (!localIds.has(String(id))) map.delete(String(id));
+      });
+      (local || []).forEach((tx) => map.set(String(tx.id), tx));
+      return [...map.values()];
+    }
+
+    function pushCloudState() {
+      if (suppressCloudWrite || !db || !currentUser || !signedInEmail()) return;
+      Object.values(appState.groups).forEach((g) => {
+        if (!g || !g.id || g.virtual) return;
+        const payload = cloudifyGroup(g);
+        const ref = db.collection("groups").doc(g.id);
+        db.runTransaction((tx) => tx.get(ref).then((snap) => {
+          const existingDoc = snap.exists ? snap.data() : null;
+          const existing = existingDoc ? (existingDoc.transactions || []) : [];
+          payload.transactions = mergeById(existing, payload.transactions, lastCloudGroupTxIds[g.id] || []);
+          if (existingDoc && !lastCloudSeenGroups[g.id]) {
+            const emails = new Set([...(existingDoc.memberEmails || []), ...payload.memberEmails]);
+            const links = [...(existingDoc.memberLinks || [])];
+            payload.memberLinks.forEach((link) => {
+              if (!links.some((item) => (item.email || "").toLowerCase() === link.email)) links.push(link);
+            });
+            payload.memberEmails = [...emails];
+            payload.memberLinks = links;
+            payload.members = [...new Set([...(existingDoc.members || []), ...payload.members])];
+          }
+          payload.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+          payload.updatedBy = signedInEmail();
+          tx.set(ref, payload, { merge: true });
+        })).catch((err) => console.warn("Cloud group sync:", err));
+      });
+
+      const byEmail = {};
+      (appState.directTransactions || []).forEach((tx) => {
+        const friend = googleFriendForTx(tx);
+        if (!friend) return;
+        const email = friend.email.toLowerCase();
+        (byEmail[email] = byEmail[email] || { friend, txs: [] }).txs.push(cloudifyDirect(tx, friend));
+      });
+      Object.entries(byEmail).forEach(([email, bag]) => {
+        const id = pairDocId(signedInEmail(), email);
+        const ref = db.collection("direct_ledgers").doc(id);
+        db.runTransaction((tx) => tx.get(ref).then((snap) => {
+          const existing = snap.exists ? (snap.data().transactions || []) : [];
+          const names = {};
+          names[signedInEmail()] = signedInName();
+          names[email] = bag.friend.name;
+          tx.set(ref, {
+            id,
+            participants: [signedInEmail(), email].sort(),
+            names,
+            transactions: mergeById(existing, bag.txs, lastCloudDirectIds[id] || []),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
+        })).catch((err) => console.warn("Cloud 1-on-1 sync:", err));
+      });
+    }
+
+    function applySharedGroup(data) {
+      if (!data || !data.id) return;
+      (data.memberLinks || []).forEach((link) => ensureGoogleFriend(link.email, link.name));
+      const local = localizeGroup(data);
+      const previous = appState.groups[local.id];
+      if (previous) {
+        const receipts = {};
+        (previous.transactions || []).forEach((t) => { if (t.receipt) receipts[String(t.id)] = t.receipt; });
+        local.transactions = (local.transactions || []).map((t) => t.receipt || !receipts[String(t.id)] ? t : { ...t, receipt: receipts[String(t.id)] });
+      }
+      lastCloudGroupTxIds[local.id] = (data.transactions || []).map((t) => t.id);
+      lastCloudSeenGroups[local.id] = true;
+      appState.groups[local.id] = local;
+      if (!appState.activeGroupId || !appState.groups[appState.activeGroupId]) appState.activeGroupId = local.id;
+    }
+
+    function listenForSharedGroups() {
+      if (!db || !signedInEmail()) return;
+      if (unsubSharedGroups) unsubSharedGroups();
+      unsubSharedGroups = db.collection("groups")
+        .where("memberEmails", "array-contains", signedInEmail())
+        .onSnapshot((snap) => {
+          suppressCloudWrite = true;
+          snap.docChanges().forEach((change) => {
+            if (change.type === "removed") {
+              delete appState.groups[change.doc.id];
+              delete lastCloudGroupTxIds[change.doc.id];
+              delete lastCloudSeenGroups[change.doc.id];
+              return;
+            }
+            applySharedGroup(change.doc.data());
+          });
+          if (!appState.groups[appState.activeGroupId]) appState.activeGroupId = Object.keys(appState.groups)[0] || "";
+          persistLocal();
+          suppressCloudWrite = false;
+          renderAll();
+        }, (err) => console.warn("Shared groups:", err));
+    }
+
+    function listenForDirectLedgers() {
+      if (!db || !signedInEmail()) return;
+      if (unsubDirectLedgers) unsubDirectLedgers();
+      unsubDirectLedgers = db.collection("direct_ledgers")
+        .where("participants", "array-contains", signedInEmail())
+        .onSnapshot((snap) => {
+          suppressCloudWrite = true;
+          const receipts = {};
+          (appState.directTransactions || []).forEach((t) => { if (t.receipt) receipts[String(t.id)] = t.receipt; });
+          const cloudEmails = new Set();
+          const fromCloud = [];
+          snap.forEach((doc) => {
+            const data = doc.data();
+            lastCloudDirectIds[doc.id] = (data.transactions || []).map((t) => t.id);
+            const other = (data.participants || []).find((e) => e !== signedInEmail());
+            if (!other) return;
+            cloudEmails.add(other);
+            ensureGoogleFriend(other, (data.names || {})[other]);
+            const friend = appState.friends.find((f) => f.email && f.email.toLowerCase() === other);
+            if (!friend) return;
+            (data.transactions || []).forEach((tx) => {
+              const localTx = localizeDirect(tx, friend);
+              if (!localTx.receipt && receipts[String(localTx.id)]) localTx.receipt = receipts[String(localTx.id)];
+              fromCloud.push(localTx);
+            });
+          });
+          const kept = (appState.directTransactions || []).filter((t) => {
+            const friend = googleFriendForTx(t);
+            if (!friend || !friend.email) return true;
+            return !cloudEmails.has(friend.email.toLowerCase());
+          });
+          appState.directTransactions = fromCloud.concat(kept);
+          persistLocal();
+          suppressCloudWrite = false;
+          renderAll();
+        }, (err) => console.warn("Shared 1-on-1:", err));
+    }
+
     function syncUserCloud(user) {
       if (!db || !user) return;
       migrateDefaultGroupId();
@@ -3788,8 +4272,6 @@
       if (myDisplayAccount) {
         myDisplayAccount.textContent = user.displayName ? `${user.displayName} (${user.email})` : user.email;
       }
-
-      const g = getGroup();
 
       // 1. Listen for incoming requests targeted to my email
       if (unsubIncomingRequests) unsubIncomingRequests();
@@ -3828,41 +4310,14 @@
           renderFriendRequestsUI();
         }, (err) => console.warn("Outgoing requests note:", err));
 
-      // 3. Listen to active group
-      listenToCloudGroup(g.id);
+      listenForSharedGroups();
+      listenForDirectLedgers();
+      pushCloudState();
     }
 
     function listenToCloudGroup(groupId) {
-      if (!db || !currentUser) return;
-      if (unsubscribeGroupListener) unsubscribeGroupListener();
-
-      const docRef = db.collection("groups").doc(groupId);
-      unsubscribeGroupListener = docRef.onSnapshot((doc) => {
-        if (doc.exists) {
-          const cloudData = doc.data();
-          if (cloudData.transactions) {
-            const g = getGroup();
-            g.transactions = cloudData.transactions;
-            if (cloudData.members) g.members = cloudData.members;
-            if (cloudData.currency) g.currency = cloudData.currency;
-            // Apply incoming cloud data locally only. Calling saveState() here would
-            // write the same document back to Firestore and retrigger this listener.
-            localStorage.setItem("fairshare_state_v9", JSON.stringify(appState));
-            renderAll();
-          }
-        } else {
-          const g = getGroup();
-          docRef.set({
-            id: g.id,
-            name: g.name,
-            currency: g.currency,
-            members: g.members,
-            transactions: g.transactions,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-            updatedBy: currentUser.email
-          }, { merge: true }).catch(() => {});
-        }
-      }, (err) => console.warn("Firestore group note:", err));
+      listenForSharedGroups();
+      if (groupId) pushCloudState();
     }
 
         // --- Group Invite Handling via URL Parameters ---
@@ -3896,25 +4351,24 @@
           id: id,
           name: name,
           currency: "₹",
-          members: [by],
+          members: ["You"],
+          memberLinks: [],
           simplifyDebts: true,
           transactions: []
         };
       }
 
-      // 2. Add current user to group
-      const myName = currentUser ? (currentUser.displayName || currentUser.email.split("@")[0]) : "You";
-      if (!appState.groups[id].members.includes(myName)) {
-        appState.groups[id].members.push(myName);
+      const group = appState.groups[id];
+      if (!group.members.includes("You")) group.members.unshift("You");
+      if (by && by !== "You" && !group.members.includes(by)) group.members.push(by);
+      if (byEmail) {
+        group.memberLinks = group.memberLinks || [];
+        if (!group.memberLinks.some((l) => (l.email || "").toLowerCase() === byEmail.toLowerCase())) {
+          group.memberLinks.push({ email: byEmail.toLowerCase(), name: by || byEmail.split("@")[0] });
+        }
+        addApprovedFriend(byEmail, by);
       }
       appState.activeGroupId = id;
-
-      // 3. Connect as approved friends
-      if (byEmail) {
-        addApprovedFriend(byEmail, by);
-      } else if (by) {
-        addApprovedFriend("", by);
-      }
 
       saveState();
       renderAll();
@@ -3938,7 +4392,13 @@
 
     window.shareGroupInvite = function() {
       const g = getGroup();
-      const inviteUrl = `${window.location.origin}${window.location.pathname}?joinGroup=${encodeURIComponent(g.id)}&groupName=${encodeURIComponent(g.name)}`;
+      if (!g || g.virtual) {
+        alert("Create a group first, then share the invite link.");
+        return;
+      }
+      const by = currentUser ? `&by=${encodeURIComponent(currentUser.displayName || currentUser.email.split("@")[0])}` : "";
+      const byEmail = currentUser && currentUser.email ? `&byEmail=${encodeURIComponent(currentUser.email)}` : "";
+      const inviteUrl = `${window.location.origin}${window.location.pathname}?joinGroup=${encodeURIComponent(g.id)}&groupName=${encodeURIComponent(g.name)}${by}${byEmail}`;
       navigator.clipboard.writeText(inviteUrl).then(() => {
         alert(`Group invite link copied.\n\nSend it to anyone you want in "${g.name}". They should sign in with Google if you want the ledger to sync live.`);
       }).catch(() => {
