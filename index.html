@@ -1055,9 +1055,20 @@
         try {
           const parsed = JSON.parse(saved);
           if (parsed.theme) appState.theme = parsed.theme;
-          if (parsed.friends && Array.isArray(parsed.friends)) appState.friends = parsed.friends;
+          if (parsed.friends && Array.isArray(parsed.friends)) {
+            // Clean out sample template mock friends so users only see people they actually connected with
+            appState.friends = parsed.friends.filter(f => f.id !== "f1" && f.id !== "f2" && (f.email || (f.name !== "Aryan" && f.name !== "Rahul")));
+          }
           if (parsed.directTransactions && Array.isArray(parsed.directTransactions)) appState.directTransactions = parsed.directTransactions;
-          if (parsed.groups && Object.keys(parsed.groups).length > 0) appState.groups = parsed.groups;
+          if (parsed.groups && Object.keys(parsed.groups).length > 0) {
+            appState.groups = parsed.groups;
+            Object.values(appState.groups).forEach(g => {
+              if (g.id === "group_default" && (!g.transactions || g.transactions.length === 0)) {
+                g.members = g.members.filter(m => m !== "Aryan" && m !== "Rahul");
+                if (g.members.length === 0) g.members = ["You"];
+              }
+            });
+          }
           if (parsed.activeGroupId && appState.groups[parsed.activeGroupId]) appState.activeGroupId = parsed.activeGroupId;
           dropUntouchedDemo();
         } catch (e) {
