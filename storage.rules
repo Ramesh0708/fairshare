@@ -1,0 +1,20 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /receipts/{groupId}/{fileName} {
+      function groupData() {
+        return firestore.get(/databases/(default)/documents/groups/$(groupId)).data;
+      }
+      function isMember() {
+        return request.auth != null
+          && request.auth.token.email != null
+          && groupData().memberEmails is list
+          && request.auth.token.email.lower() in groupData().memberEmails;
+      }
+      allow read: if isMember();
+      allow write: if isMember()
+        && request.resource.size < 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+  }
+}
