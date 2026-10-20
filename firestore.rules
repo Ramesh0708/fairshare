@@ -1,0 +1,78 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null && request.auth.token.email != null;
+    }
+    function email() {
+      return request.auth.token.email.lower();
+    }
+    function isMember(data) {
+      return signedIn()
+        && data.memberEmails is list
+        && email() in data.memberEmails;
+    }
+
+    match /groups/{groupId} {
+      function claimKeysOnly() {
+        return request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(["memberEmails", "claimInviteId", "updatedAt", "updatedBy"]);
+      }
+      function claimingSeat() {
+        return signedIn()
+          && resource.data.memberEmails is list
+          && request.resource.data.claimInviteId is string
+          && exists(/databases/$(database)/documents/invites/$(request.resource.data.claimInviteId))
+          && get(/databases/$(database)/documents/invites/$(request.resource.data.claimInviteId)).data.groupId == groupId
+          && claimKeysOnly()
+          && request.resource.data.memberEmails.hasAll(resource.data.memberEmails)
+          && request.resource.data.memberEmails.size() == resource.data.memberEmails.size() + 1
+          && email() in request.resource.data.memberEmails
+          && !(email() in resource.data.memberEmails);
+      }
+
+      allow get: if isMember(resource.data);
+      allow list: if false;
+      allow create: if signedIn()
+        && request.resource.data.id == groupId
+        && request.resource.data.memberEmails is list
+        && email() in request.resource.data.memberEmails;
+      allow update: if isMember(resource.data) || claimingSeat();
+      allow delete: if isMember(resource.data);
+    }
+
+    match /invites/{inviteId} {
+      allow get: if signedIn();
+      allow list: if false;
+      allow create: if signedIn()
+        && request.resource.data.createdBy == email()
+        && request.resource.data.groupId is string
+        && request.resource.data.inviteId == inviteId;
+      allow update, delete: if signedIn() && resource.data.createdBy == email();
+    }
+
+    match /friend_requests/{requestId} {
+      allow create: if signedIn()
+        && request.resource.data.fromEmail == email()
+        && request.resource.data.toEmail is string
+        && request.resource.data.toEmail != email()
+        && request.resource.data.status == "pending";
+      allow read: if signedIn() && (
+        resource.data.fromEmail == email() || resource.data.toEmail == email()
+      );
+      allow update: if signedIn() && (
+        (
+          resource.data.toEmail == email()
+          && request.resource.data.status in ["accepted", "declined"]
+          && request.resource.data.fromEmail == resource.data.fromEmail
+          && request.resource.data.toEmail == resource.data.toEmail
+        ) || (
+          resource.data.fromEmail == email()
+          && request.resource.data.fromEmail == resource.data.fromEmail
+          && request.resource.data.toEmail == resource.data.toEmail
+        )
+      );
+      allow delete: if signedIn() && resource.data.fromEmail == email();
+    }
+  }
+}
